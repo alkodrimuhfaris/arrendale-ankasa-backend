@@ -1,0 +1,1 @@
+segala hal yang tidak berkaitan dengan hubungan backend ke db, route atau frontend tapi dibutuhkan untuk kemulusan database
