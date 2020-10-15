@@ -14,7 +14,7 @@ app.use(cors());
 app.use(bodyParser.json())
 
 // IMPORT ROUTES
-const authRouter = require('./src/routes/auth')
+const authRouter = require('./src/routes/user')
 
 app.use('/auth', authRouter)
 
