@@ -22,7 +22,6 @@ module.exports = {
         } else {
             const { email, password } = results
             const isExist = await authModel.checkUserExist({ email })
-            console.log(isExist)
             if (isExist.length > 0) {
                 if (isExist[0].password) {
                     bcrypt.compare(password, isExist[0].password, (err, result) => {

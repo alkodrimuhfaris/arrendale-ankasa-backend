@@ -13,5 +13,17 @@ module.exports = {
                 }
             })
         })
+    },
+    signUp: (data={}) => {
+        return new Promise((resolve, reject) =>{
+            console.log(data)
+            db.query('INSERT INTO users SET ?', data, (err, result, _fields)=> {
+                if(err) {
+                    reject(err);
+                }else {
+                    resolve(result)
+                }
+            })
+        })
     }
 }
