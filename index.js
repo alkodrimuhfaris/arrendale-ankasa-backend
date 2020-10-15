@@ -13,11 +13,15 @@ app.use(bodyParser.urlencoded({
 app.use(cors());
 app.use(bodyParser.json())
 
+app.use('/uploads', express.static('assets/uploads/public'))
+
 // IMPORT ROUTES
-const authRouter = require('./src/routes/user')
+const authRouter = require('./src/routes/auth')
+const userRouter = require('./src/routes/user')
+
 
 app.use('/auth', authRouter)
-
+app.use('/user', userRouter)
 
 app.listen(8080, () => {
     console.log('App Listening on port 8080')

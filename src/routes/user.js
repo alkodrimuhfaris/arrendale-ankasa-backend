@@ -1,10 +1,17 @@
 const { Router } = require('express')
 
-const {loginController, signUpController} = require('../controllers/user')
+const {
+    getProfile,
+    updateProfile, 
+    updateAvatar
+} = require('../controllers/user')
+
+const authMiddleware = require('../middlewares/authentication')
 
 const router = Router()
 
-router.post('/login', loginController)
-router.post('/signup', signUpController)
+router.get('/profile', authMiddleware.authUser, getProfile)
+router.patch('/profile/', authMiddleware.authUser, updateProfile)
+router.patch('/profile/upload', authMiddleware.authUser, updateAvatar)
 
 module.exports = router
