@@ -1,0 +1,1 @@
+semua file terutama foto diletakkan di folder ini
