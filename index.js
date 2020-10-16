@@ -18,10 +18,12 @@ app.use('/uploads', express.static('assets/uploads/public'))
 // IMPORT ROUTES
 const authRouter = require('./src/routes/auth')
 const userRouter = require('./src/routes/user')
+const airlinesRouter = require('./src/routes/airlines')
 
 
 app.use('/auth', authRouter)
 app.use('/user', userRouter)
+app.use('/airlines', airlinesRouter)
 
 app.listen(8080, () => {
     console.log('App Listening on port 8080')

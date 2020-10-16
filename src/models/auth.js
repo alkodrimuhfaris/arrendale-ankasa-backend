@@ -25,17 +25,5 @@ module.exports = {
                 }
             })
         })
-    },
-    updatePhoto: (data={}, uid) => {
-        return new Promise((resolve, reject) =>{
-            console.log(data)
-            db.query(`UPDATE ${table} SET ? WHERE id=${uid}`, data, (err, result, _fields)=> {
-                if(err) {
-                    reject(err);
-                }else {
-                    resolve(result)
-                }
-            })
-        })
     }
 }
