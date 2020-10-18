@@ -1,6 +1,5 @@
 require('dotenv').config()
 const express = require('express')
-
 const app = express()
 
 const bodyParser = require('body-parser')
@@ -28,3 +27,4 @@ app.use('/airlines', airlinesRouter)
 app.listen(8080, () => {
     console.log('App Listening on port 8080')
   })
+
