@@ -3,10 +3,9 @@ const table = 'users'
 
 
 module.exports = {
-    getDetailProfile: (data) =>{
+    checkUserExist: (data) =>{
         return new Promise((resolve, reject) =>{
-            db.query('SELECT * FROM users WHERE ?', data, (err, result, _fields)=>{
-                // console.log(data)
+            db.query(`SELECT * FROM ${table} WHERE ?`, data, (err, result, _fields)=>{
                 if(err) {
                     reject(err);
                 }else {
@@ -15,10 +14,10 @@ module.exports = {
             })
         })
     },
-    updateUser: (data={}, uid) => {
+    signUp: (data={}) => {
         return new Promise((resolve, reject) =>{
             console.log(data)
-            db.query(`UPDATE ${table} SET ? WHERE id=${uid}`, data, (err, result, _fields)=> {
+            db.query('INSERT INTO users SET ?', data, (err, result, _fields)=> {
                 if(err) {
                     reject(err);
                 }else {
