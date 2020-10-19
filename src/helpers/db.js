@@ -1,12 +1,17 @@
-let mysql = require('mysql')
+const mysql = require('mysql')
 
-let conn = mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASS,
-  database: process.env.DB_NAME
-})
+const {
+  DB_HOST,
+  DB_USER,
+  DB_PASSWORD,
+  DB_NAME
+} = process.env
 
-conn.connect()
+const data = {
+  host: DB_HOST,
+  user: DB_USER,
+  password: DB_PASSWORD,
+  database: DB_NAME
+}
 
-module.exports = conn
+module.exports = mysql.createConnection(data)
