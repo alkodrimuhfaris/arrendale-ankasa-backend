@@ -6,8 +6,8 @@ module.exports = {
     if (limit === '-'){
       page=1
     } else {
-      Number(limit) && limit > 0 ? limit = Number(limit) : limit = 5
-      Number(page) && page > 0 ? page = Number(page) : page = 1
+      limit = (Number(limit) && limit > 0) ? Number(limit) : 5
+      page = (Number(page) && page > 0) ? Number(page) : 1
       pages = Math.ceil(count / limit) || 1
     }
     let nextLink = null
@@ -36,6 +36,7 @@ module.exports = {
     let limiter = ''
     if (limit === '-') {
       page = 1
+      limit = 'showing all data'
     } else {
       Number(limit) && limit > 0 ? limit = Number(limit) : limit = 5
       Number(page) && page > 0 ? page = Number(page) : page = 1
