@@ -14,7 +14,7 @@ module.exports = {
   },
   getFlight: async (origin, destination, departure_time, tables = 'flight') => {
     query = `SELECT * FROM (SELECT id, airlines_id, origin, date(departure_time) as departure_date, time(departure_time) as departure_time, destination, date(arrived_time) as arrived_date, time(arrived_time) as arrived_time
-              FROM ${flight}) as flight
+              FROM ${tables}) as flight
             LEFT JOIN (
                 SELECT flight_id, class, seat_count, price
                 FROM flight_detail               
