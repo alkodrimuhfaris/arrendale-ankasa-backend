@@ -8,21 +8,42 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 app.use(express.static('public'))
 
-const {
-  getFlight,
-  getFlightCount
-} = require('../models/flight')
+const flight = require('../models/flight')
 
 module.exports = {
   getFlight: async (req, res) => {
     const path = 'flight'
-    let {origin, destination, departure_date} = req.query
-    origin=Number(origin)
-    destination=Number(destination)
-    const {page,limit,limiter} = pagination.pagePrep(req.query)
+    let {origin, 
+      destination, 
+      departure_date, 
+      className,
+      departTmeArr=[null,null,null,null],
+      arrivedTimeArr=[null,null,null,null],
+      facilites = {},
+      airlines = [],
+      lowestPrice = 0,
+      highestPrice = 1000000,
+      transit = []} = req.query
+
+      const {page,limit,limiter} = pagination.pagePrep(req.query)
+   
+      let data = {
+        origin=Number(origin),
+        destination=Number(destination),
+        departure_date,
+        limiter,
+        className,
+        departTmeArr,
+        arrivedTimeArr,
+        facilites,
+        airlines,
+        lowestPrice=Number(lowestPrice),
+        highestPrice=Number(highestPrice),
+        transit
+      }
     try {
-      const result = await getFlight(origin, destination, departure_date, limiter)
-      const [{count}] = await getFlightCount(origin, destination, departure_date) || 0
+      const result = await flight.getFlight(data)
+      const [{count}] = await flight.getFlightCount(data) || 0
       if (result.length) {
         const pageInfo = pagination.paging(count, page, limit, path, req)
         return responseStandard(res, 'List of Flight', {...{data: result}, ...{pageInfo}})

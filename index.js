@@ -19,12 +19,14 @@ const authRouter = require('./src/routes/auth')
 const userRouter = require('./src/routes/user')
 const airlinesRouter = require('./src/routes/airlines')
 const exploreRouter = require('./src/routes/explore')
+const bookingRouter = require('./src/routes/mybooking')
 
 
 app.use('/auth', authRouter)
 app.use('/user', userRouter)
 app.use('/airlines', airlinesRouter)
 app.use('/explore', exploreRouter)
+app.use('/mybook', bookingRouter)
 
 app.listen(8080, () => {
     console.log('App Listening on port 8080')

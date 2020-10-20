@@ -2,7 +2,7 @@ const db = require('../helpers/db')
 const getFromDB = require('../helpers/promiseToDB')
 const transactionToDB = require('../helpers/transactionToDB')
 
-const table = 'items'
+const table = 'flight'
 let query = ''
 
 
@@ -181,7 +181,7 @@ module.exports = {
     return await getFromDB(query, [origin, destination, departure_date, className])
   },
   createFlight: async (flight, flightDetail) => {
-    query = [ ['INSERT INTO flight SET ?', [flight]], 
+    query = [ ['INSERT INTO flight SET ?', flight], 
               ['INSERT INTO flight_detail (class, seat_count, price, flight_id) VALUES ?', flightDetail]]
     return await transactionToDB(query)
   },
@@ -189,6 +189,28 @@ module.exports = {
     query = `SELECT *
             FROM flight_detail
             WHERE ?`
+    return await getFromDB(query, data)
+  },
+  getFlightByDetail: async (data) => {
+    query =  `SELECT *
+              FROM flight_detail
+              LEFT JOIN (
+                SELECT 	
+                  flight.id as flight_id,
+                  name as airlines_name,
+                  logo as airlines_logo,
+                  airlines_code,
+                  origin,
+                  departure_time,
+                  destination,
+                  arrived_time,
+                  airlines.id as airlines_id
+                FROM flight
+                LEFT JOIN airlines
+                ON flight.airlines_id = airlines.id
+              ) as flight
+              ON flight_detail.flight_id = flight.flight_id
+              WHERE flight_detail.id = ?`
     return await getFromDB(query, data)
   }
 }
