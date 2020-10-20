@@ -1,4 +1,3 @@
-const db = require('../helpers/db')
 const getFromDB = require('../helpers/promiseToDB')
 
 let query = ''
