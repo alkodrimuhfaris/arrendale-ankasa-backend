@@ -1,66 +1,52 @@
-const db = require('../helpers/db')
 const table = 'flight'
-
+const getFromDB = require('../helpers/promiseToDB')
+let query = ''
 
 module.exports = {
-    getFlightByConditions: (data) =>{
-        return new Promise((resolve, reject) =>{
-            db.query(`SELECT * FROM ${table} WHERE ?`, data, (err, result, _fields)=>{
-                // console.log(data)
-                if(err) {
-                    reject(err);
-                }else {
-                    resolve(result)
-                }
-            })
-        })
+    getFlightByConditions: async (data, tables=table) =>{
+        query = `SELECT 
+                 * FROM 
+                 ${tables} 
+                 WHERE ?`
+        
+        return await getFromDB(query, data)
     },
-    getFlight: () =>{
-        return new Promise((resolve, reject) =>{
-            db.query(`SELECT * FROM ${table}`, (err, result, _fields)=>{
-                // console.log(data)
-                if(err) {
-                    reject(err);
-                }else {
-                    resolve(result)
-                }
-            })
-        })
+    getFlight: async (tables=table) =>{
+        query = `SELECT * 
+                 FROM ${tables}`
+        
+        return await getFromDB(query)
     },
-    createFlight: (data={}) => {
-        return new Promise((resolve, reject) =>{
-            console.log(data)
-            db.query(`INSERT INTO ${table} SET ?`, data, (err, result, _fields)=> {
-                if(err) {
-                    reject(err);
-                }else {
-                    resolve(result)
-                }
-            })
-        })
+    createFlight: async (data={}, tables=table) => {
+        query = `INSERT 
+                 INTO ${tables} 
+                 SET ?`
+        
+        return await getFromDB(query, data)
     },
-    countFlight: (data) => {
-        return new Promise((resolve, reject) =>{
-            db.query(`SELECT COUNT(*) as count FROM ${table} WHERE name LIKE '${data}'`, (err, result, _fields) =>{
-                if(err) {
-                    reject(err);
-                }else {
-                    resolve(result[0].count);
-                }
-            })
-        }
-        )
+    countFlight: async (data, tables=table) => {
+        query = `SELECT 
+                 COUNT(*) 
+                 AS count 
+                 FROM ${tables} 
+                 WHERE 
+                 departure_time = '${data}'`
+                 
+        return await getFromDB(query)
     },
-    updateFlight: (data={}, id) => {
-        return new Promise((resolve, reject) =>{
-            console.log(data)
-            db.query(`UPDATE ${table} SET ? WHERE id=${id}`, data, (err, result, _fields)=> {
-                if(err) {
-                    reject(err);
-                }else {
-                    resolve(result)
-                }
-            })
-        })
+    updateFlight: async (data={}, id, tables=table) => {
+        query = `UPDATE 
+                 ${tables} 
+                 SET ? 
+                 WHERE id=${id}`
+
+        return await getFromDB(query, data)                
+    },
+    deleteFlight: async (data, tables=table) => {
+        query = `DELETE 
+                 FROM ${tables} 
+                 WHERE ?`
+        
+        return await getFromDB(query, data)                                 
     }
 }

@@ -1,66 +1,55 @@
-const db = require('../helpers/db')
 const table = 'facilities'
-
+const getFromDB = require('../helpers/promiseToDB')
+let query = ''
 
 module.exports = {
-    getFacilitiesByConditions: (data) =>{
-        return new Promise((resolve, reject) =>{
-            db.query(`SELECT * FROM ${table} WHERE ?`, data, (err, result, _fields)=>{
-                // console.log(data)
-                if(err) {
-                    reject(err);
-                }else {
-                    resolve(result)
-                }
-            })
-        })
+    getFacilitiesByConditions: async (data, tables=table) =>{
+        query = `SELECT 
+                 * FROM 
+                 ${tables}
+                 WHERE ?`
+        
+        return await getFromDB(query, data)
     },
-    getFacilities: () =>{
-        return new Promise((resolve, reject) =>{
-            db.query(`SELECT * FROM ${table}`, (err, result, _fields)=>{
-                // console.log(data)
-                if(err) {
-                    reject(err);
-                }else {
-                    resolve(result)
-                }
-            })
-        })
+    getFacilities: async (tables=table) =>{
+        query = `SELECT 
+                 * FROM 
+                 ${tables}`
+        
+        return await getFromDB(query)
     },
-    createFacilities: (data={}) => {
-        return new Promise((resolve, reject) =>{
-            console.log(data)
-            db.query(`INSERT INTO ${table} SET ?`, data, (err, result, _fields)=> {
-                if(err) {
-                    reject(err);
-                }else {
-                    resolve(result)
-                }
-            })
-        })
+    createFacilities: async (data={}, tables=table) => {
+        query = `INSERT 
+                 INTO 
+                 ${tables} 
+                 SET ?`
+        
+        return await getFromDB(query, data)
     },
-    countFacilities: (data) => {
-        return new Promise((resolve, reject) =>{
-            db.query(`SELECT COUNT(*) as count FROM ${table} WHERE name LIKE '${data[0]}' AND nation LIKE '${data[1]}'`, (err, result, _fields) =>{
-                if(err) {
-                    reject(err);
-                }else {
-                    resolve(result[0].count);
-                }
-            })
-        }
-        )
+    countFacilities: async (data, tables=table) => {
+        query = `SELECT 
+                 COUNT(*) 
+                 AS count 
+                 FROM ${tables} 
+                 WHERE name 
+                 LIKE '${data}'`
+        
+        return await getFromDB(query)
     },
-    updateFacilities: (data={}, id) => {
-        return new Promise((resolve, reject) =>{
-            console.log(data)
-            db.query(`UPDATE ${table} SET ? WHERE class_id=${id}`, data, (err, result, _fields)=> {
-                if(err) {
-                    reject(err);
-                }else {
-                    resolve(result)
-                }
-            })
-        })
+    updateFacilities: async (data={}, id, tables=table) => {
+        query = `UPDATE 
+                 ${tables} 
+                 SET ? 
+                 WHERE 
+                 class_id=${id}`
+
+        return await getFromDB(query, data)
+    },
+    deleteFacilities: async (data, tables=table) => {
+        query = `DELETE 
+                 FROM ${tables} 
+                 WHERE ?`
+        
+        return await getFromDB(query, data)
     }
 }

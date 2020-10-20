@@ -19,9 +19,11 @@ const authRouter = require('./src/routes/auth')
 const userRouter = require('./src/routes/user')
 const airlinesRouter = require('./src/routes/airlines')
 const flightRouter = require('./src/routes/flight')
-const detailFlightRouter = require('./src/routes/flightDetail')
 const destinationListRouter = require('./src/routes/destinationList')
 const faciliesRouter = require('./src/routes/facilities')
+const classFlightRouter = require('./src/routes/classFlight')
+const transitRouter = require('./src/routes/transit')
+const detailFlightRouter = require('./src/routes/detailFlight')
 
 
 app.use('/auth', authRouter)
@@ -31,6 +33,8 @@ app.use('/flight', flightRouter)
 app.use('/flightdetails', detailFlightRouter)
 app.use('/destination', destinationListRouter)
 app.use('/facilities', faciliesRouter)
+app.use('/class', classFlightRouter)
+app.use('/transit', transitRouter)
 
 app.listen(8080, () => {
     console.log('App Listening on port 8080')

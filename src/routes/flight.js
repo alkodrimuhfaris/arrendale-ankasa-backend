@@ -4,7 +4,8 @@ const {
     getFlightById,
     getFlight, 
     updateFlight,
-    createFlight
+    createFlight,
+    deleteFlight
 } = require('../controllers/flight')
 
 const authMiddleware = require('../middlewares/authentication')
@@ -15,5 +16,6 @@ router.get('/:id', getFlightById)
 router.get('/', getFlight)
 router.post('/', createFlight)
 router.patch('/:id', updateFlight)
+router.delete('/:id', deleteFlight)
 
 module.exports = router
