@@ -4,13 +4,13 @@ let query = ''
 
 module.exports = {
   topUpBalance: async (data=[]) => {
-    query = `UPDATE user
+    query = `UPDATE users
             SET balance = ?
             WHERE id = ?`
     return await getFromDB(query, data)
   },
   deductBalance: async (data=[]) => {
-    query = `UPDATE user
+    query = `UPDATE users
             SET balance = ?
             WHERE id = ?`
     return await getFromDB(query, data)

@@ -8,7 +8,7 @@ module.exports = {
     return await getFromDB(query, cpData)
   },
   createPassanger: async (passangerData) => {
-    query = `INSERT INTO passanger SET ?`
+    query = `INSERT INTO passangers SET ?`
     return await getFromDB(query, passangerData)
   },
   getCPbyId: async (cpId) => {
@@ -16,7 +16,7 @@ module.exports = {
     return await getFromDB(query, cpId)
   },
   getPassangerbyId: async (passangerId) => {
-    query = `SELECT * FROM passanger WHERE id = ?`
+    query = `SELECT * FROM passangers WHERE id = ?`
     return await getFromDB(query, passangerId)
   }
 }

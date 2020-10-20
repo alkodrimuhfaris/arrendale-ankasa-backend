@@ -54,9 +54,9 @@ module.exports = {
 
     facilites = Object.keys(facilities).length ? ` AND (${facilitiesArr}) ` : ' '
 
-    let airlines = airlines.length ? ` AND (${airlines.map(i => {return i = ` airlines_id = ${i} `}).join(' OR ')} ) ` : ' '
+    airlines = airlines.length ? ` AND (${airlines.map(i => {return i = ` airlines_id = ${i} `}).join(' OR ')} ) ` : ' '
 
-    let transit = transit.length ? ` AND (${transit.map(i => i = i>1 ? ` transit > ${i} ` : ` transit = ${i} ` ).join(' OR ')}) ` : ' '
+    transit = transit.length ? ` AND (${transit.map(i => i = i>1 ? ` transit > ${i} ` : ` transit = ${i} ` ).join(' OR ')}) ` : ' '
 
     query = `SELECT *
             FROM (
@@ -135,9 +135,9 @@ module.exports = {
 
     facilites = Object.keys(facilities).length ? ` AND (${facilitiesArr}) ` : ' '
 
-    let airlines = airlines.length ? ` AND (${airlines.map(i => {return i = ` airlines_id = ${i} `}).join(' OR ')} ) ` : ' '
+    airlines = airlines.length ? ` AND (${airlines.map(i => {return i = ` airlines_id = ${i} `}).join(' OR ')} ) ` : ' '
 
-    let transit = transit.length ? ` AND (${transit.map(i => i = i>1 ? ` transit > ${i} ` : ` transit = ${i} ` ).join(' OR ')}) ` : ' '
+    transit = transit.length ? ` AND (${transit.map(i => i = i>1 ? ` transit > ${i} ` : ` transit = ${i} ` ).join(' OR ')}) ` : ' '
 
     query = `SELECT COUNT(id) as count
             FROM (
@@ -199,7 +199,7 @@ module.exports = {
                   flight.id as flight_id,
                   name as airlines_name,
                   logo as airlines_logo,
-                  airlines_code,
+                  flight_code,
                   origin,
                   departure_time,
                   destination,

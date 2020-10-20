@@ -28,8 +28,8 @@ module.exports = {
       const {page,limit,limiter} = pagination.pagePrep(req.query)
    
       let data = {
-        origin=Number(origin),
-        destination=Number(destination),
+        origin:Number(origin),
+        destination:Number(destination),
         departure_date,
         limiter,
         className,
@@ -37,8 +37,8 @@ module.exports = {
         arrivedTimeArr,
         facilites,
         airlines,
-        lowestPrice=Number(lowestPrice),
-        highestPrice=Number(highestPrice),
+        lowestPrice:Number(lowestPrice),
+        highestPrice:Number(highestPrice),
         transit
       }
     try {

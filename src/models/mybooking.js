@@ -5,36 +5,36 @@ const transactionToDB = require('../helpers/transactionToDB')
 let query = ''
 
 module.exports = {
-  getBooking: (user_id, limiter) => {
+  getBooking: async (user_id, limiter) => {
     query = `SELECT *
             FROM booking
             WHERE ?
             ${limiter}`
     return await getFromDB(query, user_id)
   },
-  getBookingCount: (user_id) => {
+  getBookingCount: async (user_id) => {
     query = `SELECT count(booking.id) as count
             FROM booking
             WHERE ?`
     return await getFromDB(query, user_id)
   },
-  getBookingById: (booking_id) => {
+  getBookingById: async (booking_id) => {
     query = `SELECT *
             FROM booking
             WHERE booking.id = ?`
     return await getFromDB(query, booking_id)
   },
-  createBooking: (booking) => {
+  createBooking: async (booking) => {
     query = `INSERT INTO booking SET ?`
     return await getFromDB(query, booking)
   },
-  updateStatusBooking: (booking_id) => {
+  updateStatusBooking: async (booking_id) => {
     query = `UPDATE booking
             SET status = 1
             WHERE id = ?`
     return await getFromDB(query, booking_id)
   },
-  createPassanger: (passangerData) => {
+  createPassanger: async (passangerData) => {
     query = `INSERT INTO passanger SET ?`
     return await getFromDB(query, passangerData)
   }

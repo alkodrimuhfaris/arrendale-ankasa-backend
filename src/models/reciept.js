@@ -3,8 +3,8 @@ const getFromDB = require('../helpers/promiseToDB')
 let query = ''
 
 module.exports = {
-  createReciept: (reciptData) => {
-    query = `INSERT INTO recipt SET ?`
+  createReciept: async (reciptData) => {
+    query = `INSERT INTO reciept SET ?`
     return await  getFromDB(query, reciptData)
   }
 }
