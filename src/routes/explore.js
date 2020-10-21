@@ -1,15 +1,11 @@
 const { Router } = require('express')
-const {
-  getFlight
-} = require('../controllers/flight')
-const {
-  getPopularCity
-} = require('../controllers/explore')
+const flight = require('../controllers/flight')
+const city = require('../controllers/explore')
 
 
 const router = Router()
 
-router.get('/flight', getFlight)
-router.get('/popular', getPopularCity)
+router.get('/flight', flight.getFlight)
+router.get('/popular', city.getPopularCity)
 
 module.exports = router

@@ -13,6 +13,8 @@ const codeGen = require('../helpers/codeGen')
 const cityModel = require('../models/city')
 const responseStandard = require('../helpers/responseStandard')
 
+const pagination = require('../helpers/pagination')
+
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 app.use(express.static('public'))
@@ -22,15 +24,20 @@ const joi = require('joi')
 
 module.exports = {
   getBooking: async (req, res) => {
+    //ganti jadi req.user
     let { id:user_id } = req.query
     user_id = Number(user_id)
     if (user_id) {
       try{
-        const data = await mybookingModel.getBooking({user_id})
+        const {page,limit,limiter} = pagination.pagePrep(req.query)
+        const data = await mybookingModel.getBooking({user_id}, limiter)
+        const [{count}] = await mybookingModel.getBookingCount({user_id}) || 0
         if(data.length) {
-            return responseStandard(res, `Booking from id: ${user_id}`, {...data})
+          const pageInfo = pagination.paging(count, page, limit, 'mybook', req)
+          return responseStandard(res, `Booking from id: ${user_id}`, {data, pageInfo})
         } else {
-            return responseStandard(res, 'There is no booking', {})
+          const pageInfo = pagination.paging(count, page, limit, 'mybook', req)
+          return responseStandard(res, 'There is no booking list', {pageInfo})
         }
       } catch (error) {
         return responseStandard(res, 'Internal server Error', {}, 500, false)
@@ -40,19 +47,23 @@ module.exports = {
     }
   },
   getBookingById: async (req, res) => {
+    //ganti jadi req.user
     let {id:user_id} =  req.query
     user_id = Number(user_id)
-    let {booking_id} = req.params
+    let {id:booking_id} = req.params
     booking_id = Number(booking_id)
     if (user_id){
       try {
-        const data = await mybookingModel.getBookingById(booking_id)
+        let data = await mybookingModel.getBookingById(booking_id)
+        let detailBooking = await mybookingModel.getBookingDetail(booking_id)
         if(data.length) {
-          return responseStandard(res, `Detail booking from id: ${id}`, {...data})
+          ([data] = data)
+          return responseStandard(res, `Detail booking from id: ${booking_id}`, {data, detailBooking: detailBooking}, )
         } else {
           return responseStandard(res, 'Your booking is waiting for payment', {})
         }
       } catch (error) {
+        console.log(error)
         return responseStandard(res, 'Internal server Error', {}, 500, false)
       }
     } else {
@@ -103,6 +114,32 @@ module.exports = {
     user_id = Number(user_id)
     console.log(user_id)
 
+    let data = 
+
+    {
+        flight_detail_id: "1",
+        quantity: "3", 
+    
+        //data contact person
+        cpId: "0", //diisi 0 ketika contact person bikin baru, atau ketikkan id contact person yang diinginkan sesuai tabel database
+    
+        //ketika cpId tidak nol contact person detail harus diisi
+        full_name_cp: "Timotius",
+        email: "timo@mail.com",
+        phone_number: "89633449007",
+    
+        //ketika passangerId null, full name, title dan nationality harus diisi
+        //ketika passangerId diisi data passanger otomatis akan berubah sesuai dengan tabel
+        passangerArray:
+        [
+            {full_name: 'Alkodri Muhammad Faris', title:'Mr.', nationality: 'Indonesian', passangerId: null},
+            {passangerId: 1},
+            {full_name: 'Alkodri Muhammad', title:'Mr.', nationality: 'Indonesian', passangerId: null},
+        ],
+        insurance: "true",
+        payment_method: "ankasa payment"
+        }
+
     //extract data from body
     let {
         flight_detail_id,
@@ -114,7 +151,7 @@ module.exports = {
         email,
         phone_number,
         payment_method
-      } = req.body
+      } = data
       
     quantity = Number(quantity)
 
@@ -265,12 +302,23 @@ module.exports = {
       let passangerBooking = []
       passangerDetail.forEach(item => {
         item = [assignBook.insertId, item.title, item.full_name, item.nationality]
-        passangerBooking.push([item])
+        passangerBooking.push(item)
       })
 
-      await mybookingModel.createBookingDetail(passangerBooking)
+      console.log('passangerBooking')
+      console.log(passangerBooking)
 
+      //get seat pesawat
+      let [{seat_count}] = await flightModel.getSeatCount(flight_detail_id)
+      seat_count = seat_count - quantity
+      if(seat_count < 0) {return responseStandard(res, 'Seat is full!', {}, 400, false)}
+
+      await mybookingModel.createBookingDetail([passangerBooking])      
+      
       if(assignBook.insertId) {
+        //update seat pesawat
+        await flightModel.updateFlightSeat([seat_count,flight_detail_id])
+
         if(status){
           let delArr = ['price','status', 'booking_code']
           let displayTicket = []
@@ -291,6 +339,7 @@ module.exports = {
 
           //create ticket
           const assignTicket = await ticketModel.createTicket(ticketData)
+
           if (assignTicket){
             //data for reciept
             let recieptData = {
@@ -303,6 +352,7 @@ module.exports = {
             //create reciept
             const createReciept = await recieptModel.createReciept(recieptData)
             
+            //create detail reciept
             let showRecieptDetail = {
               reciept_id:createReciept.insertId,
               transaction:'ticket flight on '+flight_code ,
@@ -320,7 +370,6 @@ module.exports = {
             let recieptDetailData = [
               [Object.values(showRecieptDetail)]
             ]
-
             insurance && recieptDetailData.push([Object.values(detailInsurance)])
 
             showRecieptDetail = insurance ? [showRecieptDetail,detailInsurance] : [showRecieptDetail]
@@ -340,6 +389,10 @@ module.exports = {
               recieptData: {id:createReciept.insertId, ...recieptData},
               recieptDetailData: showRecieptDetail
             }
+
+            //add city_activity
+            await cityModel.addCityActivity({city_id:origin, origin_counter:quantity})
+            await cityModel.addCityActivity({city_id:destination, destination_counter:quantity})
 
             return responseStandard(res, 'Ticket issued, balance deducted', result)
           } else {

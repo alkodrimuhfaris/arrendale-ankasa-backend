@@ -212,5 +212,17 @@ module.exports = {
               ON flight_detail.flight_id = flight.flight_id
               WHERE flight_detail.id = ?`
     return await getFromDB(query, data)
+  },
+  updateFlightSeat: async (data) => {
+    query = `UPDATE flight_detail
+            SET seat_count = ?
+            WHERE id = ?`
+    return await getFromDB(query, data)
+  },
+  getSeatCount: async (data) => {
+    query = `SELECT seat_count
+            FROM flight_detail
+            WHERE id = ?`
+    return await getFromDB(query, data)
   }
 }
