@@ -1,4 +1,8 @@
 const stringify = require('./stringifyObj')
+const qs = require('querystring')
+const {
+    APP_URL
+} = process.env
 
 module.exports = {
   paging: (count = 0, page = 1, limit = 5, tables, req) => {
@@ -13,10 +17,10 @@ module.exports = {
     let nextLink = null
     let prefLink = null
     if (page < pages) {
-      nextLink = process.env.APP_URL+tables+'?'+stringify({ ...req.query, ...{ page: page + 1 } })
+      nextLink = APP_URL+tables+'?'+stringify({ ...req.query, ...{ page: page + 1 } })
     }
     if (page > 1) {
-      prefLink = process.env.APP_URL+tables+'?'+stringify({ ...req.query, ...{ page: page - 1 } })
+      prefLink = APP_URL+tables+'?'+stringify({ ...req.query, ...{ page: page - 1 } })
     }
     const pageInfo = {
       count: count,
@@ -49,5 +53,41 @@ module.exports = {
       offset: offset,
       limiter: limiter
     })
+  },
+  pagination: (req, totalData) => {
+    let { page = 1, limit = 10 } = req.query
+    limit = parseInt(limit)
+    page = parseInt(page)
+    if (page < 1) {
+      page = 1
+    }
+    if (limit < 1 || limit > 100) {
+      limit = 5
+    }
+    const totalPage = Math.ceil(totalData / limit)
+    console.log(totalPage)
+  
+    const path = req.originalUrl.slice(1).split('?')[0]
+    const prev = qs.stringify({ ...req.query, ...{ page: page - 1 }})
+    const next = qs.stringify({ ...req.query, ...{ page: page + 1 }})
+    console.log(path)
+    const prevLink = page > 1 ? `${APP_URL}${path}?${prev}` : null
+    const nextLink = page < totalPage ? `${APP_URL}${path}?${next}` : null
+  
+    const offset = (page - 1) * limit
+    return {
+      offset,
+      pageInfo: {
+        currentPage: page,
+        totalPage,
+        totalData,
+        limitData: limit,
+        prevLink,
+        nextLink
+      }
+    }
   }
 }
+
+
+

@@ -13,13 +13,7 @@ module.exports = {
             WHERE id = ?`
     return await getFromDB(query, cityId)
   },
-  getCity: async (cityId, tables='city') => {
-    query = `SELECT *
-            FROM ${tables}
-            WHERE id = ?`
-    return await getFromDB(query, cityId)
-  },
-  getFlight: async (data, tables = 'flight') => {
+  getFlightSearch: async (data, tables = 'flight') => {
     let {origin, 
       destination,
       departure_date,
@@ -201,8 +195,10 @@ module.exports = {
                   logo as airlines_logo,
                   flight_code,
                   origin,
+                  departure_date,
                   departure_time,
                   destination,
+                  arrived_date,
                   arrived_time,
                   airlines.id as airlines_id
                 FROM flight
@@ -224,5 +220,51 @@ module.exports = {
             FROM flight_detail
             WHERE id = ?`
     return await getFromDB(query, data)
+  },
+  getFlightByConditions: async (data, tables=table) =>{
+      query = `SELECT 
+               * FROM 
+               ${tables} 
+               WHERE ?`
+      
+      return await getFromDB(query, data)
+  },
+  getFlight: async (tables=table) =>{
+      query = `SELECT * 
+               FROM ${tables}`
+      
+      return await getFromDB(query)
+  },
+  createFlight: async (data={}, tables=table) => {
+      query = `INSERT 
+               INTO ${tables} 
+               SET ?`
+      
+      return await getFromDB(query, data)
+  },
+  countFlight: async (data, tables=table) => {
+      query = `SELECT 
+               COUNT(*) 
+               AS count 
+               FROM ${tables} 
+               WHERE 
+               departure_time = '${data}'`
+               
+      return await getFromDB(query)
+  },
+  updateFlight: async (data={}, id, tables=table) => {
+      query = `UPDATE 
+               ${tables} 
+               SET ? 
+               WHERE id=${id}`
+
+      return await getFromDB(query, data)                
+  },
+  deleteFlight: async (data, tables=table) => {
+      query = `DELETE 
+               FROM ${tables} 
+               WHERE ?`
+      
+      return await getFromDB(query, data)                                 
   }
 }

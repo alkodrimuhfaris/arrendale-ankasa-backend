@@ -1,30 +1,41 @@
-const db = require('../helpers/db')
 const table = 'users'
-
+const getFromDB = require('../helpers/promiseToDB')
+let query = ''
 
 module.exports = {
-    getDetailProfile: (data) =>{
-        return new Promise((resolve, reject) =>{
-            db.query('SELECT * FROM users WHERE ?', data, (err, result, _fields)=>{
-                // console.log(data)
-                if(err) {
-                    reject(err);
-                }else {
-                    resolve(result)
-                }
-            })
-        })
+    getAllUser: async (tables=table) =>{
+        query = `SELECT * 
+                 FROM 
+                 ${tables}
+                 WHERE
+                 role_id=${3}`
+        
+        return await getFromDB(query)                 
     },
-    updateUser: (data={}, uid) => {
-        return new Promise((resolve, reject) =>{
-            console.log(data)
-            db.query(`UPDATE ${table} SET ? WHERE id=${uid}`, data, (err, result, _fields)=> {
-                if(err) {
-                    reject(err);
-                }else {
-                    resolve(result)
-                }
-            })
-        })
+    getDetailProfile: async (data, tables=table) =>{
+        query = `SELECT * 
+                 FROM 
+                 ${tables} 
+                 WHERE ?
+                 AND 
+                 role_id=${3}`
+        
+        return await getFromDB(query, data)                 
+    },
+    updateUser: async (data={}, uid, tables=table) => {
+        query = `UPDATE 
+                 ${tables} 
+                 SET ? 
+                 WHERE id=${uid}`
+        
+        return await getFromDB(query, data)                                  
+    },
+    deleteUser: async (data, tables=table) => {
+        query = `DELETE 
+                 FROM 
+                 ${tables} 
+                 WHERE ?`
+        
+        return await getFromDB(query, data)                                  
     }
 }

@@ -24,9 +24,10 @@ const joi = require('joi')
 
 module.exports = {
   getBooking: async (req, res) => {
-    //ganti jadi req.user
-    let { id:user_id } = req.query
+    
+    let { id:user_id } = req.user
     user_id = Number(user_id)
+
     if (user_id) {
       try{
         const {page,limit,limiter} = pagination.pagePrep(req.query)
@@ -48,8 +49,9 @@ module.exports = {
   },
   getBookingById: async (req, res) => {
     //ganti jadi req.user
-    let {id:user_id} =  req.query
+    let {id:user_id} =  req.user
     user_id = Number(user_id)
+
     let {id:booking_id} = req.params
     booking_id = Number(booking_id)
     if (user_id){
@@ -71,7 +73,7 @@ module.exports = {
     }
   },
   createCP: async (req,res) => {
-    let {user_id} = req.query
+    let {id:user_id} = req.user
     user_id = Number(user_id)
     console.log(user_id)
     if (!user_id) {return responseStandard(res, 'Forbidden Access!', {}, 400, false)}
@@ -90,7 +92,7 @@ module.exports = {
     }
   },
   createPassanger: async (req,res) => {
-    let {user_id} = req.query
+    let {id:user_id} = req.user
     user_id = Number(user_id)
     console.log(user_id)
     if (!user_id) {return responseStandard(res, 'Forbidden Access!', {}, 400, false)}
@@ -110,7 +112,7 @@ module.exports = {
   },
   createBooking: async (req, res) => {
     //get user id from header
-    let {user_id} = req.query
+    let {id:user_id} = req.user
     user_id = Number(user_id)
     console.log(user_id)
 
@@ -239,15 +241,19 @@ module.exports = {
             airlines_logo,
             flight_code,
             origin,
-            class_name, 
+            class_name,
+            departure_date, 
             departure_time,
             destination,
+            arrived_date,
             arrived_time,
             price
           }] = await flightModel.getFlightByDetail(flight_detail_id)
       
-      let [{city_name:origin_city_name, country_code:origin_city_country}] = await cityModel.getCityCountry(origin)
-      let [{city_name:destination_city_name, country_code:destination_city_country}] = await cityModel.getCityCountry(destination)
+      let [{city_name:origin_city_name, 
+            country_code:origin_city_country}] = await cityModel.getCityCountry(origin)
+      let [{city_name:destination_city_name, 
+            country_code:destination_city_country}] = await cityModel.getCityCountry(destination)
 
       //get price (with insurance or not)
       price = price*quantity
@@ -286,10 +292,12 @@ module.exports = {
         origin,
         origin_city_name,
         origin_city_country,
+        departure_date,
         departure_time,
         destination,
         destination_city_name,
         destination_city_country,
+        arrived_date,
         arrived_time,
         insurance,
         price: price + insurancePrice,

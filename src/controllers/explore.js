@@ -29,7 +29,7 @@ module.exports = {
         return responseStandard(res, 'There is no item in the list')
       }
     } catch (error) {
-      
+      return responseStandard(res, error.message, {}, 500, false)
     }
   }
 }

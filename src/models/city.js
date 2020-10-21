@@ -19,7 +19,7 @@ module.exports = {
               FROM (
                   SELECT *
                   FROM city_activity
-                  WHERE created_at BETWEEN '2020-9-21 05:40:00' AND '2020-10-21 05:40:00'
+                  WHERE created_at BETWEEN ${from} AND ${to}
               ) AS city_activity_filter
               GROUP BY city_id
             ) as city_activity

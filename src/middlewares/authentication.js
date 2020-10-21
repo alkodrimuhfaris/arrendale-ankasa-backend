@@ -24,5 +24,15 @@ module.exports = {
         }else {
             return responseStandard(res, 'Forbidden Access', {}, 403, false )
         }
+    },
+    authRole: (role) => {
+        return (req, res, next) => {
+            
+            if (req.user.role_id !== role) {
+                return responseStandard(res, 'You dont Have Access', {}, 401, false)
+            } 
+            console.log(role)
+            next();
+        }
     }
 }

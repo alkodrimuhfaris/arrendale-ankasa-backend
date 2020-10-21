@@ -1,29 +1,26 @@
-const db = require('../helpers/db')
 const table = 'users'
-
+const getFromDB = require('../helpers/promiseToDB')
+let query = ''
 
 module.exports = {
-    checkUserExist: (data) =>{
-        return new Promise((resolve, reject) =>{
-            db.query(`SELECT * FROM ${table} WHERE ?`, data, (err, result, _fields)=>{
-                if(err) {
-                    reject(err);
-                }else {
-                    resolve(result)
-                }
-            })
-        })
+    checkUserExist: async (data, tables=table) =>{
+        query = `SELECT * 
+                 FROM ${tables}
+                 WHERE ?`
+                
+        return await getFromDB(query, data)
     },
-    signUp: (data={}) => {
-        return new Promise((resolve, reject) =>{
-            console.log(data)
-            db.query('INSERT INTO users SET ?', data, (err, result, _fields)=> {
-                if(err) {
-                    reject(err);
-                }else {
-                    resolve(result)
-                }
-            })
-        })
+    signUp: async (data={}, tables=table) => {
+        query = `INSERT INTO ${tables} SET ?`
+
+        return await getFromDB(query, data)
+    },
+    forgotPassword: async (data={}, uid, tables=table) => {
+        query = `UPDATE 
+                 ${tables} 
+                 SET ? 
+                 WHERE id=${uid}`
+        
+        return await getFromDB(query, data)                                  
     }
 }

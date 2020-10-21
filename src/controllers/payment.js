@@ -16,7 +16,7 @@ const ticketModel = require('../models/ticket')
 module.exports= {
   topUpBalance: async (req, res) => {
     //ganti jadi req.user nanti
-    let {id:user_id} = req.query
+    let {id:user_id} = req.user
     if(!user_id){return responseStandard(res, 'Access Forbidden!', {}, 500, false)}
 
     const schemaPayment = joi.object({
@@ -45,7 +45,7 @@ module.exports= {
   },
   commitPayment: async (req, res) => {
     //ganti jadi req.user nanti
-    let {id} = req.query
+    let {id} = req.user
     id = Number(id)
     const schemaBooking = joi.object({
       booking_id: joi.number().required()
