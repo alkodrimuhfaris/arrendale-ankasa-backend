@@ -32,7 +32,6 @@ const {
     signUpAdminController
 } = require('../controllers/auth')
 
-const authMiddleware = require('../middlewares/authentication')
 
 const {
     getDestinationById,

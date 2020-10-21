@@ -43,9 +43,13 @@ module.exports = {
             let data = await detailFlightModel.getFlight()
             let {origin, destination} = data[0]
 
+            console.log('-----------------------------------------------')
+            console.log(origin)
+            console.log('-----------------------------------------------')
+
             let [{city_name:origin_city_name, 
                 country_code:origin_city_country}] = await detailFlightModel.getCityCountry(origin)
-                console.log(country_code)
+                // console.log(country_code)
             let [{city_name:destination_city_name, 
                 country_code:destination_city_country}] = await detailFlightModel.getCityCountry(destination)            
 
@@ -56,8 +60,9 @@ module.exports = {
                 if (result.length) {
                     result = result.map(item => {
                         Object.assign(item, {origin_city_name, origin_city_country, destination_city_name, destination_city_country})
-                        })
-                    return responseStandard(res, `List of DetailFlight`, {result, pageInfo})
+                        return responseStandard(res, `List of DetailFlight`, {item, pageInfo})                        
+                    })
+                    console.log(result)
                 } else {
                     return responseStandard(res, `Nothing found here`, {pageInfo}, 500, false)
                 }
@@ -66,9 +71,9 @@ module.exports = {
                 let result = await detailFlightModel.searchPrice([searchKey, searchValue, orderByKey, orderByValue, limit, offset])
                 if (result.length) {
                     result = result.map(item => {
-                        Object.assign(item, {origin_city_name, origin_city_country, destination_city_name, destination_city_country})
-                        })
-                    return responseStandard(res, `List of DetailFlight`, {result, pageInfo})
+                        Object.assign(item, {origin_city_name, origin_city_country, destination_city_name, destination_city_country})                        
+                        return responseStandard(res, `List of DetailFlight`, {result, pageInfo})    
+                    })
                 } else {
                     return responseStandard(res, `Nothing found here`, {pageInfo}, 500, false)
                 }
@@ -76,14 +81,18 @@ module.exports = {
 
             let result = await detailFlightModel.getDetailFlight([searchKey, searchValue, orderByKey, orderByValue, limit, offset])
             if (result.length) {
+                let newItem = []
+
                 result = result.map(item => {
                     Object.assign(item, {origin_city_name, origin_city_country, destination_city_name, destination_city_country})
+                    newItem = item
                     })
-                return responseStandard(res, `List of DetailFlight`, {result, pageInfo})
+                        console.log(result)
+
+                    return responseStandard(res, `List of DetailFlight`, {newItem, pageInfo})
             } else {
                 return responseStandard(res, `Nothing found here`, {pageInfo}, 500, false)
             }
-
         } catch (e) {
             return responseStandard(res, e.message, {}, 500, false)
         }

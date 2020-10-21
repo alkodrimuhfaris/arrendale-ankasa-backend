@@ -108,7 +108,6 @@ module.exports = {
                     results = {
                         ...results,
                         role_id: 3,
-                        uniqueKey: UNIQUE_KEY,
                         password: hashedPassword,
                     }
                     const data = await authModel.signUp(results)
@@ -151,7 +150,8 @@ module.exports = {
                     const hashedPassword = await bcrypt.hash(results.password, salt)
                     results = {
                         ...results,
-                        role_id: 1,
+                        role_id: 1,                    
+                        uniqueKey: UNIQUE_KEY,
                         password: hashedPassword,
                     }
                     const data = await authModel.signUp(results)

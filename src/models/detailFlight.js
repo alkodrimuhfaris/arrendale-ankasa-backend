@@ -56,7 +56,7 @@ module.exports = {
         return await getFromDB(query)
     },
     getDetailFlight: async (data=[id, '']) =>{
-        console.log(data)
+        // console.log(data)
         console.log('disini')
         query = `${newQuery} 
                  WHERE ${data[0]} 
