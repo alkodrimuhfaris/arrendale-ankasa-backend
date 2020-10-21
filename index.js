@@ -47,5 +47,5 @@ app.use('/resetpassword', resetPasswordRouter)
 
 
 app.listen(8000, () => {
-    console.log('App Listening on port 8080')
+    console.log('App Listening on port 8000')
   })
