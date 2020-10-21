@@ -27,12 +27,9 @@
     "eslint": "^7.11.0",
     "eslint-config-airbnb-base": "^14.2.0",
     "express": "^4.17.1",
-<<<<<<< HEAD
-=======
     "joi": "^17.2.1",
     "jsonwebtoken": "^8.5.1",
     "multer": "^1.4.2",
->>>>>>> 169d6f307032130bb724592233a5469f32a39d07
     "mysql": "^2.18.1"
   }
 }
