@@ -1,6 +1,5 @@
 const sendMail = require('nodemailer');
 
-
 module.exports = {
     mailHelper: (data) => {
         
