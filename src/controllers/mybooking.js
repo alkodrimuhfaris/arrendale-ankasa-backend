@@ -116,32 +116,6 @@ module.exports = {
     user_id = Number(user_id)
     console.log(user_id)
 
-    let data = 
-
-    {
-        flight_detail_id: "1",
-        quantity: "3", 
-    
-        //data contact person
-        cpId: "0", //diisi 0 ketika contact person bikin baru, atau ketikkan id contact person yang diinginkan sesuai tabel database
-    
-        //ketika cpId tidak nol contact person detail harus diisi
-        full_name_cp: "Timotius",
-        email: "timo@mail.com",
-        phone_number: "89633449007",
-    
-        //ketika passangerId null, full name, title dan nationality harus diisi
-        //ketika passangerId diisi data passanger otomatis akan berubah sesuai dengan tabel
-        passangerArray:
-        [
-            {full_name: 'Alkodri Muhammad Faris', title:'Mr.', nationality: 'Indonesian', passangerId: null},
-            {passangerId: 1},
-            {full_name: 'Alkodri Muhammad', title:'Mr.', nationality: 'Indonesian', passangerId: null},
-        ],
-        insurance: "true",
-        payment_method: "later"
-        }
-
     //extract data from body
     let {
         flight_detail_id,
@@ -153,7 +127,7 @@ module.exports = {
         email,
         phone_number,
         payment_method
-      } = data
+      } = req.body
       
     quantity = Number(quantity)
 
