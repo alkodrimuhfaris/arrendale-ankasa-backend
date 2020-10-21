@@ -28,6 +28,12 @@ module.exports = {
     query = `INSERT INTO booking SET ?`
     return await getFromDB(query, booking)
   },
+  createBookingDetail: async(bookingDetail) => {
+    query = `INSERT INTO booking_details
+            (booking_id, passanger_title, passanger_name, passanger_nationality)
+            VALUE ?`
+    return await getFromDB(query, bookingDetail)
+  },
   updateStatusBooking: async (booking_id) => {
     query = `UPDATE booking
             SET status = 1

@@ -1,3 +1,8 @@
+const express = require('express')
+const app = express()
+const bodyParser = require('body-parser')
+const {v1:uuidv1} = require('uuid')
+
 const mybookingModel = require('../models/mybooking')
 const cpAndPassangerModel = require('../models/cpAndPassanger')
 const flightModel = require('../models/flight')
@@ -5,7 +10,13 @@ const paymentModel = require('../models/payment')
 const ticketModel = require('../models/ticket')
 const recieptModel = require('../models/reciept')
 const codeGen = require('../helpers/codeGen')
+const cityModel = require('../models/city')
 const responseStandard = require('../helpers/responseStandard')
+
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
+app.use(express.static('public'))
+
 
 const joi = require('joi')
 
@@ -94,19 +105,24 @@ module.exports = {
 
     //extract data from body
     let {
-        flight_detail_id, 
+        flight_detail_id,
+        quantity, 
         cpId,
-        passangerId,
+        passangerArray,
         insurance,
         full_name_cp,
         email,
         phone_number,
-        full_name_passanger,
-        title,
-        nationality,
-        payment_method,
+        payment_method
       } = req.body
+      
+    quantity = Number(quantity)
+
+    if(quantity !== passangerArray.length) {return responseStandard(res, 'Number of passanger should be equal to quantity!', {}, 400, false)}
     
+    console.log('passanger array')
+    console.log(passangerArray)
+
     //collect data for validate booking
     let bookingSchema = {
       flight_detail_id,
@@ -119,13 +135,7 @@ module.exports = {
                   email,
                   phone_number,
                   user_id}
-    
-    //collect data for passanger data
-    let passangerData = {full_name: full_name_passanger,
-                        title,
-                        nationality,
-                        user_id}
-    
+        
     //joi validate booking schema
     const schemaBooking = joi.object({
       flight_detail_id: joi.number().required(),
@@ -144,10 +154,11 @@ module.exports = {
 
     try {
       let passangerInsert = {}
-      let passangerDetail = {}
-      
-      //create new contact person
-      if (!Number(cpId)) {
+      let passangerDetail = []
+
+
+      //validating array passanger id
+      if(!Number(cpId)){
         const schemaCP = joi.object({
           full_name: joi.string(),
           email: joi.string().email(),
@@ -159,27 +170,31 @@ module.exports = {
         if (error) {return responseStandard(res, error.message, {error: error.message}, 400, false)}
         cpInsert = await cpAndPassangerModel.createCP(cpDetail)
       }
-      
-      //create new passanger to database
-      if(!Number(passangerId)){
-        const schemaPassanger = joi.object({
-          full_name: joi.string(),
-          title: joi.string(),
-          nationality: joi.string(),
-          user_id: joi.number()
-        })
-        let { value, err } = schemaPassanger.validate(passangerData)
-        passangerDetail = {...value}
-        if (err) {return responseStandard(res, err.message, {error: error.message}, 400, false)}
-        passangerInsert = await cpAndPassangerModel.createPassanger(passangerDetail)
-        Object.assign(passangerDetail, {id: passangerInsert.insertId})
-      } else {
-        [passangerDetail] = await cpAndPassangerModel.getPassangerbyId(Number(passangerId))
+
+      for (let item of passangerArray) {
+        Object.assign(item, {user_id})
+        if (!Number(item.passangerId)) {
+          delete item.passangerId
+          const schemaPassanger = joi.object({
+            full_name: joi.string(),
+            title: joi.string(),
+            nationality: joi.string(),
+            user_id: joi.number()
+          })
+          let { value, err } = schemaPassanger.validate(item)
+          if (err) {return responseStandard(res, err.message, {error: error.message}, 400, false)}
+          item = {...value}
+          passangerInsert = await cpAndPassangerModel.createPassanger(item)
+          Object.assign(item, {id: passangerInsert.insertId})
+          passangerDetail.push(item)
+        } else {
+          [item] = await cpAndPassangerModel.getPassangerbyId(Number(item.passangerId))
+          passangerDetail.push(item)
+        }
       }
-      
+
       //get data passanger
       console.log(passangerDetail)
-      let {title, full_name} = passangerDetail
 
       //extract data from flight detail
       let [{
@@ -194,15 +209,19 @@ module.exports = {
             price
           }] = await flightModel.getFlightByDetail(flight_detail_id)
       
+      let [{city_name:origin_city_name, country_code:origin_city_country}] = await cityModel.getCityCountry(origin)
+      let [{city_name:destination_city_name, country_code:destination_city_country}] = await cityModel.getCityCountry(destination)
+
       //get price (with insurance or not)
-      price = insurance ? price + 2 : price
+      price = price*quantity
+      let insurancePrice = insurance ? 2 * quantity : 0
       
       //declare status
       let status = false
       let message = ''
 
       console.log(payment_method)
-      if (payment_method === 'ankasa_payment'){
+      if (payment_method === 'ankasa payment'){
         //get user balance and
         let [{balance}] = await paymentModel.getUserBalance(user_id)
   
@@ -216,54 +235,112 @@ module.exports = {
         }
       }
 
+      //booking code
+      let booking_code = codeGen.bookingGen(user_id)
+
       //booking data collector
       let bookingData = {
         user_id,
+        booking_code,
         airlines_name,
         airlines_logo,
         flight_code,
         class_name,
         origin,
+        origin_city_name,
+        origin_city_country,
         departure_time,
         destination,
+        destination_city_name,
+        destination_city_country,
         arrived_time,
-        passanger_title:title,
-        passanger_full_name:full_name,
         insurance,
-        price,
-        status
+        price: price + insurancePrice,
+        status              
       }
 
       //asign booking
       const assignBook = await mybookingModel.createBooking(bookingData)
 
+      let passangerBooking = []
+      passangerDetail.forEach(item => {
+        item = [assignBook.insertId, item.title, item.full_name, item.nationality]
+        passangerBooking.push([item])
+      })
+
+      await mybookingModel.createBookingDetail(passangerBooking)
+
       if(assignBook.insertId) {
         if(status){
-          let ticket_code = codeGen.ticketGen(user_id, assignBook.insertId)
-          let ticketData = {...bookingData, booking_id: assignBook.insertId, ticket_code:ticket_code}
-          let delArr = ['price','status']
-          delArr.forEach(props => delete ticketData[props])
+          let delArr = ['price','status', 'booking_code']
+          let displayTicket = []
+
+          let ticketData = [...Array(quantity)].map((item, index) => {
+            let ticket_code = uuidv1()
+            item = {...bookingData,
+                    passanger_title: passangerDetail[index].title,
+                    passanger_full_name: passangerDetail[index].full_name,
+                    passanger_nationality: passangerDetail[index].nationality, 
+                    booking_id: assignBook.insertId,
+                    ticket_code}
+            delArr.forEach(props => delete item[props])
+            displayTicket.push(item)
+            item = Object.values(item)
+            return [item]
+          })
+
           //create ticket
           const assignTicket = await ticketModel.createTicket(ticketData)
-          if (assignTicket.insertId){
+          if (assignTicket){
             //data for reciept
             let recieptData = {
               user_id,
-              ticket_id: assignTicket.insertId,
-              price,
-              payment_method: 'ankasa_payment',
-              flight_code
+              booking_code,
+              total_price: price+insurancePrice,
+              payment_method: 'ankasa_payment'
             }
             
             //create reciept
             const createReciept = await recieptModel.createReciept(recieptData)
+            
+            let showRecieptDetail = {
+              reciept_id:createReciept.insertId,
+              transaction:'ticket flight on '+flight_code ,
+              quantity,
+              price:price
+            }
+
+            let detailInsurance = {
+              reciept_id:createReciept.insertId,
+              transaction:'flight insurance' ,
+              quantity,
+              price:insurancePrice
+            }
+
+            let recieptDetailData = [
+              [Object.values(showRecieptDetail)]
+            ]
+
+            insurance && recieptDetailData.push([Object.values(detailInsurance)])
+
+            showRecieptDetail = insurance ? [showRecieptDetail,detailInsurance] : [showRecieptDetail]
+
+            //create reciept detail
+            await recieptModel.createRecieptDetail(recieptDetailData)
+
+            displayTicket.map(item => {
+              Object.assign(item, {id:assignTicket.insertId})
+              return item
+            })
 
             //create result response
             let result = {
-              bookingData: {id:assignBook.insertId, ...bookingData }, 
-              ticketData: {id:assignTicket.insertId, ...ticketData},
-              recieptData: {id:createReciept.insertId, ...recieptData}
+              bookingData: {id:assignBook.insertId, ...bookingData}, 
+              ticketData: displayTicket,
+              recieptData: {id:createReciept.insertId, ...recieptData},
+              recieptDetailData: showRecieptDetail
             }
+
             return responseStandard(res, 'Ticket issued, balance deducted', result)
           } else {
             return responseStandard(res, 'Your booking is created, waiting for payment', {bookingData: {id:assignBook.insertId, ...bookingData}})    
