@@ -30,6 +30,12 @@ module.exports = {
             WHERE booking_id = ?`
     return await getFromDB(query, booking_id)
   },
+  getBookingQuantity: async (booking_id) => {
+    query = `SELECT count(id) as quantity
+            FROM booking_details
+            WHERE booking_id = ?`
+    return await getFromDB(query, booking_id)
+  },
   createBooking: async (booking) => {
     query = `INSERT INTO booking SET ?`
     return await getFromDB(query, booking)
@@ -70,10 +76,12 @@ module.exports = {
                 origin,
                 origin_city_name,
                 origin_city_country,
+                departure_date,
                 departure_time,
                 destination,
                 destination_city_name,
                 destination_city_country,
+                arrived_date,
                 arrived_time,
                 insurance,
                 price,

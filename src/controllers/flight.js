@@ -118,8 +118,8 @@ module.exports = {
         return responseStandard(res, e.message, {}, 401, false)
       }
     }
-  },
-  createFlight: async (req, res) => {
+    },
+    createFlight: async (req, res) => {
     const schema = joi.object({
       airline_id: joi.number().required(),
       class_id: joi.number().required(),
@@ -135,37 +135,37 @@ module.exports = {
       return responseStandard(res, 'Error', {error: error.message}, 400, false)
     } else {
       let { name, departure_time } = results
-      try {
-        let check = await flightModel.countFlight(departure_time)
-        if (check > 0) {
-          return responseStandard(res, 'Airline Already Exist', {}, 401, false)
-        } else {
-          let data = await flightModel.createFlight(results)
+            try {
+                let check = await flightModel.countFlight(departure_time)
+                if (check > 0) {
+                    return responseStandard(res, 'Airline Already Exist', {}, 401, false)
+                } else {
+                    let data = await flightModel.createFlight(results)
 
-          if (data.affectedRows) {
-            return responseStandard(res, `Flight Has been Created`, {results}, 200, true)
-          } else {
-            return responseStandard(res, 'Error to create Flight', {}, 500, false)
-          }
+                    if (data.affectedRows) {
+                        return responseStandard(res, `Flight Has been Created`, {results}, 200, true)
+                    } else {
+                        return responseStandard(res, 'Error to create Flight', {}, 500, false)
+                    }
+                }
+            } catch (e) {
+                return responseStandard(res, e.message, {}, 401, false)
+            }
+        }
+    },
+    deleteFlight: async (req, res) => {
+      const { id } = req.params
+      let flight_id  = Number(id)
+      // console.log(uid)
+      try {
+        const data = await flightModel.deleteFlight({id: flight_id})
+        if(data.affectedRows){
+            return responseStandard(res, `Flight Has been deleted`, {})
+        } else {
+            return responseStandard(res, 'Flight Not found', {}, 401, false)
         }
       } catch (e) {
         return responseStandard(res, e.message, {}, 401, false)
       }
     }
-  },
-  deleteFlight: async (req, res) => {
-    const { id } = req.params
-    let flight_id  = Number(id)
-    // console.log(uid)
-    try {
-      const data = await flightModel.deleteFlight({id: flight_id})
-      if(data.affectedRows){
-          return responseStandard(res, `Flight Has been deleted`, {})
-      } else {
-          return responseStandard(res, 'Flight Not found', {}, 401, false)
-      }
-    } catch (e) {
-      return responseStandard(res, e.message, {}, 401, false)
-    }
-  }
 }

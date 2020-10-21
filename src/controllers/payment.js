@@ -12,6 +12,7 @@ app.use(express.static('public'))
 const bookingModel = require('../models/mybooking')
 const payment = require('../models/payment')
 const ticketModel = require('../models/ticket')
+const recieptModel = require('../models/reciept')
 
 module.exports= {
   topUpBalance: async (req, res) => {
@@ -56,7 +57,7 @@ module.exports= {
     console.log(booking_id)
     try {
       let bookingData = await bookingModel.getBookingWithDetail(id, booking_id)
-      let {price, user_id, status} = bookingData[0]
+      let {price, user_id, status, booking_code} = bookingData[0]
 
       if(id !== user_id){return responseStandard(res, 'Access Forbidden!', {}, 403, false)}
 
@@ -92,7 +93,64 @@ module.exports= {
 
       console.log(createTicket)
 
-      return responseStandard(res, 'Payment successfull! Ticket is issued', {ticket: displayTicket}, 500, false)
+      if (createTicket){
+        //data for reciept
+        let recieptData = {
+          user_id:id,
+          booking_code:booking_code,
+          total_price: price,
+          payment_method: 'ankasa_payment'
+        }
+        
+        //create reciept
+        const createReciept = await recieptModel.createReciept(recieptData)
+        Object.assign(recieptData, {id: createReciept.insertId})
+
+        const [{quantity}] = await bookingModel.getBookingQuantity(booking_id)
+        const {insurance} = bookingData[0]
+        price = insurance ? price - (quantity*2) : price
+        let insurancePrice = insurance ? quantity*2 : 0
+
+        //create detail reciept
+        let showRecieptDetail = {
+          reciept_id:createReciept.insertId,
+          transaction:'ticket flight on '+bookingData[0].flight_code ,
+          quantity:quantity,
+          price:price
+        }
+
+        let detailInsurance = {
+          reciept_id:createReciept.insertId,
+          transaction:'flight insurance' ,
+          quantity,
+          price:insurancePrice
+        }
+
+        let recieptDetailData = [
+          [Object.values(showRecieptDetail)]
+        ]
+        insurance && recieptDetailData.push([Object.values(detailInsurance)])
+
+        showRecieptDetail = insurance ? [showRecieptDetail,detailInsurance] : [showRecieptDetail]
+
+        //create reciept detail
+        await recieptModel.createRecieptDetail(recieptDetailData)
+
+        let result = {
+          ticketData: displayTicket,
+          recieptData: {id:createReciept.insertId, ...recieptData},
+          recieptDetailData: showRecieptDetail
+        }
+
+        
+        return responseStandard(res, 'Payment successfull! Ticket is issued', {result}, 500, false)
+      } else {
+        balance = balance + price
+
+        //update balance
+        await payment.deductBalance([balance, id])
+        return responseStandard(res, 'Create ticket unsuccesfull', {}, 500, false)
+      }
     } catch (error) {
       console.log(error)
       return responseStandard(res, error.message,{}, 500, false)

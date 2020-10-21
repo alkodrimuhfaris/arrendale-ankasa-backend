@@ -62,7 +62,7 @@ module.exports = {
           ([data] = data)
           return responseStandard(res, `Detail booking from id: ${booking_id}`, {data, detailBooking: detailBooking}, )
         } else {
-          return responseStandard(res, 'Your booking is waiting for payment', {})
+          return responseStandard(res, 'You have not book a trip yet, come fly with us book one', {})
         }
       } catch (error) {
         console.log(error)
@@ -139,7 +139,7 @@ module.exports = {
             {full_name: 'Alkodri Muhammad', title:'Mr.', nationality: 'Indonesian', passangerId: null},
         ],
         insurance: "true",
-        payment_method: "ankasa payment"
+        payment_method: "later"
         }
 
     //extract data from body
@@ -385,11 +385,7 @@ module.exports = {
             //create reciept detail
             await recieptModel.createRecieptDetail(recieptDetailData)
 
-            displayTicket.map(item => {
-              Object.assign(item, {id:assignTicket.insertId})
-              return item
-            })
-
+            
             //create result response
             let result = {
               bookingData: {id:assignBook.insertId, ...bookingData}, 

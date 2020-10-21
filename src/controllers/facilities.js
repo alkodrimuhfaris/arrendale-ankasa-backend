@@ -7,18 +7,47 @@ const facilityModel = require('../models/facilities')
 
 
 module.exports = {
-    getFacilityById: async (req, res) => {
-        let { id } = req.params
-        try {
-            const data = await facilityModel.getFacilitiesByConditions({ id })
-            if(data.length > 0) {
-                return responseStandard(res, `Facility with Id ${id}`, {data})
-            } else {
-                return responseStandard(res, 'Facility Not found', {}, 401, false)
+    createFacility: async (req, res) => {
+        uploadHelper(req, res, async function(err) {
+            try {
+                if (err instanceof multer.MulterError) {
+                    if(err.code === 'LIMIT_UNEXPECTED_FILE' && req.files.length === 0){
+                        console.log(err.code === 'LIMIT_UNEXPECTED_FILE' && req.files.length > 0)
+                        return responseStandard(res, 'fieldname doesnt match', {}, 500, false)
+                    }
+                    return responseStandard(res, err.message, {}, 500, false)
+                  } else if (err) {
+                    return responseStandard(res, err.message, {}, 401, false)
+                  }
+              
+                  const schema = joi.object({
+                      flight_id: joi.number().required(),
+                      facility_name: joi.string().required()
+                  })
+                  var { value: results, error } = schema.validate(req.body)
+                  if (error) {
+                      return responseStandard(res, 'Error', {error: error.message}, 400, false)
+                  } else {
+                      let { name } = results
+                      const check = await facilityModel.countFacilities(name)
+                      let picture = `uploads/${req.file.filename}`
+                      results = {
+                          ...results,
+                          facility_image: picture
+                      }
+      
+                      let data = await facilityModel.createFacilities(results)
+      
+                      if (data.affectedRows) {
+                          return responseStandard(res, `Facility Has been Created`, {results}, 200, true)
+                      } else {
+                          return responseStandard(res, 'Error to create Facility', {}, 500, false)
+                      }
+                  }
+            } catch (e) {
+                return responseStandard(res, e.message, {}, 401, false)
             }
-        } catch (e) {
-            return responseStandard(res, e.message, {}, 401, false)
-        }
+        })
     },
     getFacility: async (req, res) => {
         try {
@@ -27,6 +56,19 @@ module.exports = {
                 return responseStandard(res, `List of Facility`, {data})
             } else {
                 return responseStandard(res, `Nothing found here`, {data}, 500, false)
+            }
+        } catch (e) {
+            return responseStandard(res, e.message, {}, 401, false)
+        }
+    },
+    getFacilityById: async (req, res) => {
+        let { id } = req.params
+        try {
+            const data = await facilityModel.getFacilitiesByConditions({ id })
+            if(data.length > 0) {
+                return responseStandard(res, `Facility with Id ${id}`, {data})
+            } else {
+                return responseStandard(res, 'Facility Not found', {}, 401, false)
             }
         } catch (e) {
             return responseStandard(res, e.message, {}, 401, false)
@@ -48,8 +90,8 @@ module.exports = {
                   }
               
                   const schema = joi.object({
-                      class_id: joi.number(),
-                      name: joi.string()
+                    flight_id: joi.number(),
+                    facility_name: joi.string()
                   })
                   
                   var { value: results, error } = schema.validate(req.body)
@@ -60,7 +102,7 @@ module.exports = {
                       let picture = `uploads/${req.file.filename}`
                       results = {
                           ...results,
-                          url: picture
+                          facility_image: picture                          
                       }
       
                       let data = await facilityModel.updateFacilities(results, id)
@@ -75,49 +117,7 @@ module.exports = {
                 return responseStandard(res, e.message, {}, 401, false)
             }
         })
-    },
-    createFacility: async (req, res) => {
-        uploadHelper(req, res, async function(err) {
-            try {
-                if (err instanceof multer.MulterError) {
-                    if(err.code === 'LIMIT_UNEXPECTED_FILE' && req.files.length === 0){
-                        console.log(err.code === 'LIMIT_UNEXPECTED_FILE' && req.files.length > 0)
-                        return responseStandard(res, 'fieldname doesnt match', {}, 500, false)
-                    }
-                    return responseStandard(res, err.message, {}, 500, false)
-                  } else if (err) {
-                    return responseStandard(res, err.message, {}, 401, false)
-                  }
-              
-                  const schema = joi.object({
-                      class_id: joi.number().required(),
-                      name: joi.string().required(),
-                  })
-                  var { value: results, error } = schema.validate(req.body)
-                  if (error) {
-                      return responseStandard(res, 'Error', {error: error.message}, 400, false)
-                  } else {
-                      let { name } = results
-                      const check = await facilityModel.countFacilities(name)
-                      let picture = `uploads/${req.file.filename}`
-                      results = {
-                          ...results,
-                          url: picture
-                      }
-      
-                      let data = await facilityModel.createFacilities(results)
-      
-                      if (data.affectedRows) {
-                          return responseStandard(res, `Facility Has been Created`, {results}, 200, true)
-                      } else {
-                          return responseStandard(res, 'Error to create Facility', {}, 500, false)
-                      }
-                  }
-            } catch (e) {
-                return responseStandard(res, e.message, {}, 401, false)
-            }
-        })
-    },
+    },    
     deleteFacility: async (req, res) => {
         const { id } = req.params
         let facility_id  = Number(id)
