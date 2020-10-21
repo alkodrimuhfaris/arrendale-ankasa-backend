@@ -1,4 +1,4 @@
-const myEmail = require('../helpers/sendmail')
+const myEmail = require('../helpers/sendMail')
 const keyNumberRandom = require('../helpers/randomizer')
 const  uniqueKey = keyNumberRandom.randomizer()
 
