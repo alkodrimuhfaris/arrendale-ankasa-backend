@@ -49,7 +49,7 @@ module.exports = {
               
                   const schema = joi.object({
                       class_id: joi.number(),
-                      name: joi.string().required()
+                      name: joi.string()
                   })
                   
                   var { value: results, error } = schema.validate(req.body)
@@ -66,9 +66,9 @@ module.exports = {
                       let data = await facilityModel.updateFacilities(results, id)
       
                       if (data.affectedRows) {
-                          return responseStandard(res, `Facility Has been Created`, {results}, 200, true)
+                          return responseStandard(res, `Facility Has been Updated`, {results}, 200, true)
                       } else {
-                          return responseStandard(res, 'Error to create Facility', {}, 500, false)
+                          return responseStandard(res, 'Error to updates Facility', {}, 500, false)
                       }
                   }      
             } catch (e) {

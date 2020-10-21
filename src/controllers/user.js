@@ -105,9 +105,9 @@ module.exports = {
         try {
             const data = await userModel.deleteUser({id: uid})
             if(data.affectedRows){
-                return responseStandard(res, `Flight Has been deleted`, {})
+                return responseStandard(res, `Profile Has been deleted`, {})
             } else {
-                return responseStandard(res, 'Flight Not found', {}, 401, false)
+                return responseStandard(res, 'Profile Not found', {}, 401, false)
             }
         } catch (e) {
             return responseStandard(res, e.message, {}, 401, false)

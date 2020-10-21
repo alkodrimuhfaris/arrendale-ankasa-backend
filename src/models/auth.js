@@ -14,5 +14,13 @@ module.exports = {
         query = `INSERT INTO ${tables} SET ?`
 
         return await getFromDB(query, data)
+    },
+    forgotPassword: async (data={}, uid, tables=table) => {
+        query = `UPDATE 
+                 ${tables} 
+                 SET ? 
+                 WHERE id=${uid}`
+        
+        return await getFromDB(query, data)                                  
     }
 }

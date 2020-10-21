@@ -17,6 +17,7 @@ app.use('/uploads', express.static('assets/uploads/public'))
 // IMPORT ROUTES
 const authRouter = require('./src/routes/auth')
 const userRouter = require('./src/routes/user')
+const adminRouter = require('./src/routes/manageUser')
 const airlinesRouter = require('./src/routes/airlines')
 const flightRouter = require('./src/routes/flight')
 const destinationListRouter = require('./src/routes/destinationList')
@@ -24,10 +25,11 @@ const faciliesRouter = require('./src/routes/facilities')
 const classFlightRouter = require('./src/routes/classFlight')
 const transitRouter = require('./src/routes/transit')
 const detailFlightRouter = require('./src/routes/detailFlight')
-
+const resetPasswordRouter = require('./src/routes/forgotPassword')
 
 app.use('/auth', authRouter)
 app.use('/user', userRouter)
+app.use('/admin', adminRouter)
 app.use('/airlines', airlinesRouter)
 app.use('/flight', flightRouter)
 app.use('/flightdetails', detailFlightRouter)
@@ -35,6 +37,8 @@ app.use('/destination', destinationListRouter)
 app.use('/facilities', faciliesRouter)
 app.use('/class', classFlightRouter)
 app.use('/transit', transitRouter)
+app.use('/resetpassword', resetPasswordRouter)
+
 
 app.listen(8080, () => {
     console.log('App Listening on port 8080')

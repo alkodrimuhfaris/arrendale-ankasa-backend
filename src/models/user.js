@@ -3,11 +3,22 @@ const getFromDB = require('../helpers/promiseToDB')
 let query = ''
 
 module.exports = {
+    getAllUser: async (tables=table) =>{
+        query = `SELECT * 
+                 FROM 
+                 ${tables}
+                 WHERE
+                 role_id=${3}`
+        
+        return await getFromDB(query)                 
+    },
     getDetailProfile: async (data, tables=table) =>{
         query = `SELECT * 
                  FROM 
                  ${tables} 
-                 WHERE ?`
+                 WHERE ?
+                 AND 
+                 role_id=${3}`
         
         return await getFromDB(query, data)                 
     },

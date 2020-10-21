@@ -11,9 +11,9 @@ const authMiddleware = require('../middlewares/authentication')
 
 const router = Router()
 
-router.get('/profile', authMiddleware.authUser, getProfile)
-router.patch('/profile', authMiddleware.authUser, updateProfile)
-router.patch('/profile/upload', authMiddleware.authUser, updateAvatar)
-router.delete('/profile', authMiddleware.authUser, deleteProfile)
+router.get('/profile', authMiddleware.authUser, authMiddleware.authRole(3), getProfile)
+router.patch('/profile', authMiddleware.authUser, authMiddleware.authRole(3), updateProfile)
+router.patch('/profile/upload', authMiddleware.authUser, authMiddleware.authRole(3), updateAvatar)
+router.delete('/profile', authMiddleware.authUser, authMiddleware.authRole(3), deleteProfile)
 
 module.exports = router
