@@ -5,18 +5,52 @@ const destinationModel = require('../models/destinationList')
 
 
 module.exports = {
-    getDestinationById: async (req, res) => {
-        let { id } = req.params
-        try {
-            const data = await destinationModel.getDestinationByConditions({ id })
-            if(data.length > 0) {
-                return responseStandard(res, `Destination with Id ${id}`, {data})
-            } else {
-                return responseStandard(res, 'Destination Not found', {}, 401, false)
+    createDestination: async (req, res) => {
+        uploadHelper(req, res, async function(err) {            
+            try {
+                if (err instanceof multer.MulterError) {
+                    if(err.code === 'LIMIT_UNEXPECTED_FILE' && req.files.length === 0){
+                        console.log(err.code === 'LIMIT_UNEXPECTED_FILE' && req.files.length > 0)
+                        return responseStandard(res, 'fieldname doesnt match', {}, 500, false)
+                    }
+                    return responseStandard(res, err.message, {}, 500, false)
+                  } else if (err) {
+                    return responseStandard(res, err.message, {}, 401, false)
+                  }
+              
+                  const schema = joi.object({
+                    city_name: joi.string().required(),
+                    country_code: joi.string().required(),
+                    rating: joi.number().require()
+                  })
+                  var { value: results, error } = schema.validate(req.body)
+                  if (error) {
+                      return responseStandard(res, 'Error', {error: error.message}, 400, false)
+                  } else {
+                      let { name, nation } = results
+                      const check = await destinationModel.countDestination([name, nation])
+                      if (check === 0) {
+                          let picture = `uploads/${req.file.filename}`
+                          results = {
+                              ...results,
+                              city_picture: picture
+                          }
+                          let data = await destinationModel.createDestination(results)
+          
+                          if (data.affectedRows) {
+                              return responseStandard(res, `Destination Has been Created`, {results}, 200, true)
+                          } else {
+                              return responseStandard(res, 'Error to create Destination', {}, 500, false)
+                          }
+                      }
+                      else {
+                          return responseStandard(res, `Destination Already Exist`, {}, 500, false)
+                      }
+                  }
+            } catch (e) {
+                return responseStandard(res, e.message, {}, 401, false)
             }
-        } catch (e) {
-            return responseStandard(res, e.message, {}, 401, false)
-        }
+        })        
     },
     getDestination: async (req, res) => {
         try {
@@ -25,6 +59,19 @@ module.exports = {
                 return responseStandard(res, `List of Destination`, {data})
             } else {
                 return responseStandard(res, `Nothing found here`, {data}, 500, false)
+            }
+        } catch (e) {
+            return responseStandard(res, e.message, {}, 401, false)
+        }
+    },
+    getDestinationById: async (req, res) => {
+        let { id } = req.params
+        try {
+            const data = await destinationModel.getDestinationByConditions({ id })
+            if(data.length > 0) {
+                return responseStandard(res, `Destination with Id ${id}`, {data})
+            } else {
+                return responseStandard(res, 'Destination Not found', {}, 401, false)
             }
         } catch (e) {
             return responseStandard(res, e.message, {}, 401, false)
@@ -46,8 +93,8 @@ module.exports = {
                   }
               
                   const schema = joi.object({
-                      name: joi.string(),
-                      nation: joi.string(),
+                      city_name: joi.string(),
+                      country_code: joi.string(),
                       rating: joi.number()
                   })
                   var { value: results, error } = schema.validate(req.body)
@@ -57,7 +104,7 @@ module.exports = {
                       let picture = `uploads/${req.file.filename}`
                       results = {
                           ...results,
-                          url: picture
+                          city_picture: picture
                       }
                       let data = await destinationModel.updateDestination(results, id)
       
@@ -67,53 +114,6 @@ module.exports = {
                           return responseStandard(res, 'Error to create Destination', {}, 500, false)
                       }
                   }      
-            } catch (e) {
-                return responseStandard(res, e.message, {}, 401, false)
-            }
-        })        
-    },
-    createDestination: async (req, res) => {
-        uploadHelper(req, res, async function(err) {            
-            try {
-                if (err instanceof multer.MulterError) {
-                    if(err.code === 'LIMIT_UNEXPECTED_FILE' && req.files.length === 0){
-                        console.log(err.code === 'LIMIT_UNEXPECTED_FILE' && req.files.length > 0)
-                        return responseStandard(res, 'fieldname doesnt match', {}, 500, false)
-                    }
-                    return responseStandard(res, err.message, {}, 500, false)
-                  } else if (err) {
-                    return responseStandard(res, err.message, {}, 401, false)
-                  }
-              
-                  const schema = joi.object({
-                      name: joi.string().required(),
-                      nation: joi.string().required(),
-                      rating: joi.number().required()
-                  })
-                  var { value: results, error } = schema.validate(req.body)
-                  if (error) {
-                      return responseStandard(res, 'Error', {error: error.message}, 400, false)
-                  } else {
-                      let { name, nation } = results
-                      const check = await destinationModel.countDestination([name, nation])
-                      if (check === 0) {
-                          let picture = `uploads/${req.file.filename}`
-                          results = {
-                              ...results,
-                              url: picture
-                          }
-                          let data = await destinationModel.createDestination(results)
-          
-                          if (data.affectedRows) {
-                              return responseStandard(res, `Destination Has been Created`, {results}, 200, true)
-                          } else {
-                              return responseStandard(res, 'Error to create Destination', {}, 500, false)
-                          }
-                      }
-                      else {
-                          return responseStandard(res, `Destination Already Exist`, {}, 500, false)
-                      }
-                  }
             } catch (e) {
                 return responseStandard(res, e.message, {}, 401, false)
             }

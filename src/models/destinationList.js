@@ -1,4 +1,4 @@
-const table = 'destination_list'
+const table = 'city'
 const getFromDB = require('../helpers/promiseToDB')
 let query = ''
 
@@ -32,11 +32,11 @@ module.exports = {
                  AS count 
                  FROM ${tables} 
                  WHERE 
-                 name 
+                 city_name 
                  LIKE 
                  '${data[0]}' 
                  AND 
-                 nation 
+                 country_code 
                  LIKE 
                  '${data[1]}'`
         

@@ -1,57 +1,77 @@
-const tableDetailFlight = 'flight'
-const tableClass = 'class'
+const tableFlight = 'flight'
+const tableFlightDetail = 'flight_detail'
 const tableTransit = 'transit'
 const tableAirlines = 'airlines'
+const tableCity = 'city'
 const getFromDB = require('../helpers/promiseToDB')
 
 let query = ''
-let newQuery = `SELECT ${tableDetailFlight}.id, 
-                        ${tableAirlines}.name,
-                        ${tableAirlines}.logo AS airlines_logo,
-                        ${tableClass}.total_seat, 
-                        ${tableClass}.name AS class, 
-                        ${tableDetailFlight}.origin, 
-                        ${tableDetailFlight}.destination, 
-                        ${tableTransit}.name AS transit, 
-                        ${tableDetailFlight}.departure_date, 
-                        ${tableDetailFlight}.departure_time, 
-                        ${tableDetailFlight}.arrived_time, 
-                        ${tableClass}.price 
-                FROM ((${tableDetailFlight} 
-                    INNER JOIN airlines 
-                        ON ${tableDetailFlight}.airline_id = airlines.id)
-                    INNER JOIN class 
-                        ON ${tableDetailFlight}.class_id = ${tableClass}.id 
+let newQuery = `SELECT 
+                flight.id, 
+                airlines.name, 
+                airlines.logo AS airlines_logo, 
+                flight_detail.seat_count, 
+                flight_detail.class_name, 
+                transit.name AS transit,                 
+                flight.departure_date, 
+                flight.departure_time,
+                flight.arrived_date, 
+                flight.arrived_time, 
+                flight_detail.price FROM 
+                ((flight 
+                    INNER JOIN 
+                    airlines 
+                    ON 
+                    flight.airlines_id = airlines.id) 
+                    INNER JOIN 
+                    flight_detail 
+                    ON flight.id = flight_detail.id 
                     INNER JOIN facilities 
-                        ON ${tableClass}.id = facilities.class_id 
-                    INNER JOIN ${tableTransit} 
-                        ON ${tableDetailFlight}.transit_id = transit.id)`
-
+                    ON 
+                    flight_detail.id = facilities.flight_id 
+                    INNER JOIN 
+                    transit 
+                    ON 
+                    flight_detail.transit_id = transit.id)`
 module.exports = {
     
+    getFlight: async () =>{
+        query = `SELECT * 
+                 FROM flight`
+        
+        return await getFromDB(query)
+    },
+    getCityCountry: async (city_id) => {
+        query = `SELECT country_code, city_name
+                FROM city
+                WHERE id = ?`
+
+        return await getFromDB(query, city_id)
+      },
     getDetailFlightByConditions: async (id) =>{
         query = `${newQuery} 
-                 WHERE ${tableDetailFlight}.id=${id}
-                 GROUP BY ${tableDetailFlight}.id`
+                 WHERE ${tableFlight}.id=${id}
+                 GROUP BY ${tableFlight}.id`
         
         return await getFromDB(query)
     },
     getDetailFlight: async (data=[id, '']) =>{
+        console.log(data)
         console.log('disini')
         query = `${newQuery} 
                  WHERE ${data[0]} 
                  LIKE '%${data[1]}%' 
                  GROUP BY flight.${data[2]} 
-                 ORDER BY flight.departure_date ${data[3]} 
+                 ORDER BY flight.departure_time ${data[3]} 
                  LIMIT ${data[4]} 
                  OFFSET ${data[5]}`
         
         return await getFromDB(query)
     },
     searchTime: async (data) => {
-        let time1 = data[1].slice(1, 6)
-        let time2 = data[1].slice(8, data[1].length-1)
-
+        let time1 = data[1].slice(1, 9)
+        let time2 = data[1].slice(11, data[1].length-1)
+        console.log(time1)
         query = `${newQuery} 
                  WHERE ${data[0]} 
                  BETWEEN 
@@ -81,14 +101,14 @@ module.exports = {
     },
     checkDetailFlight: async (data) => {
         query = `SELECT COUNT(*)
-                 as count FROM ${tableDetailFlight}
+                 as count FROM ${tableFlight}
                  WHERE name LIKE '${data}'`
         
         return await getFromDB(query)
     },
     countDetailFlight: async () => {
         query = `SELECT COUNT(*) as count
-                 FROM ${tableDetailFlight}`
+                 FROM ${tableFlight}`
 
         return await getFromDB(query)
     }
