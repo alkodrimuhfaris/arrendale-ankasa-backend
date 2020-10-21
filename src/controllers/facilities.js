@@ -1,31 +1,28 @@
-const multer = require('multer')
-const uploadHelper = require('../helpers/uploadHelper')
-const bcrypt = require('bcrypt')
 const responseStandard = require('../helpers/responseStandard')
 const joi = require('joi')
 
-const airlineModel = require('../models/airline')
+const facilityModel = require('../models/facilities')
 
 
 module.exports = {
-    getAirlinesById: async (req, res) => {
+    getFacilityById: async (req, res) => {
         let { id } = req.params
-        const data = await airlineModel.getAirlinesByConditions({ id })
+        const data = await facilityModel.getFacilitiesByConditions({ id })
         if(data.length > 0) {
-            return responseStandard(res, `Airline with Id ${id}`, {data})
+            return responseStandard(res, `Facility with Id ${id}`, {data})
         } else {
-            return responseStandard(res, 'Airline Not found', {}, 401, false)
+            return responseStandard(res, 'Facility Not found', {}, 401, false)
         }
     },
-    getAllAirlines: async (req, res) => {
-        const data = await airlineModel.getAirlines()
+    getFacility: async (req, res) => {
+        const data = await facilityModel.getFacilities()
         if (data.length) {
-            return responseStandard(res, `List of Airline`, {data})
+            return responseStandard(res, `List of Facility`, {data})
         } else {
             return responseStandard(res, `Nothing found here`, {data}, 500, false)
         }
     },
-    updateAirlines: async (req, res) => {
+    updateFacility: async (req, res) => {
         let { id } = req.params
         id = Number(id)
         uploadHelper(req, res, async function(err) {
@@ -37,37 +34,36 @@ module.exports = {
               return responseStandard(res, err.message, {}, 500, false)
             } else if (err) {
               return responseStandard(res, err.message, {}, 401, false)
-            }  
+            }
+        
             const schema = joi.object({
-                name: joi.string()
+                airline_id: joi.string().required(),
+                name: joi.string().required(),
             })
-            let { value: results, error } = schema.validate(req.body)
+            
+            var { value: results, error } = schema.validate(req.body)
             if (error) {
                 return responseStandard(res, 'Error', {error: error.message}, 400, false)
             } else {
                 
-            let { name } = results
-                if ( name || req.file ) {
-                    let picture = `uploads/${req.file.filename}`
-                    console.log(req.file)
-                        results = {
-                            ...results,
-                            logo: picture
-                        }
-                    const update = await airlineModel.updateAirlinePartial({logo: picture}, id)
-                    if(update.affectedRows) {
-                        return responseStandard(res, `Airline Has been Updated`, {results})
-                    } else {
-                        return responseStandard(res, 'Airline Not found', {}, 401, false)
-                    }
-                } else {
-                    return responseStandard(res, 'At least fill one column!', '', 400, false)
+                let picture = `uploads/${req.file.filename}`
+                results = {
+                    ...results,
+                    url: picture
                 }
-                 
+
+                let data = await facilityModel.updateFacilities(results, id)
+
+                if (data.affectedRows) {
+                    return responseStandard(res, `Facility Has been Created`, {results}, 200, true)
+                } else {
+                    return responseStandard(res, 'Error to create Facility', {}, 500, false)
+                }
             }
+
         })
     },
-    createAirlines: (req, res) => {
+    createFacility: async (req, res) => {
         uploadHelper(req, res, async function(err) {
             if (err instanceof multer.MulterError) {
               if(err.code === 'LIMIT_UNEXPECTED_FILE' && req.files.length === 0){
@@ -77,33 +73,39 @@ module.exports = {
               return responseStandard(res, err.message, {}, 500, false)
             } else if (err) {
               return responseStandard(res, err.message, {}, 401, false)
-            }  
+            }
+        
             const schema = joi.object({
-                name: joi.string()
+                airline_id: joi.string().required(),
+                name: joi.string().required(),
             })
             var { value: results, error } = schema.validate(req.body)
             if (error) {
                 return responseStandard(res, 'Error', {error: error.message}, 400, false)
             } else {
-                let { name } = results
-                let check = await airlineModel.countAirlines(name)
-                if (check > 0) {
-                    return responseStandard(res, 'Airline Already Exist', {}, 401, false)
-                } else {
+                let { airline_id, name } = results
+                const check = await facilityModel.countFacilities([airline_id, name])
+                if (check === 0) {
+                    
                     let picture = `uploads/${req.file.filename}`
                     results = {
                         ...results,
-                        logo: picture
+                        url: picture
                     }
-                    let data = await airlineModel.createAirlines(results)
-        
+    
+                    let data = await facilityModel.createFacility(results)
+    
                     if (data.affectedRows) {
-                        return responseStandard(res, `Airline Has been Created`, {results}, 200, true)
+                        return responseStandard(res, `Facility Has been Created`, {results}, 200, true)
                     } else {
-                        return responseStandard(res, 'Error to create Airline', {}, 500, false)
+                        return responseStandard(res, 'Error to create Facility', {}, 500, false)
                     }
                 }
+                else {
+                    return responseStandard(res, `Facility Already Exist`, {}, 500, false)
+                }
             }
+
         })
     }
 }
