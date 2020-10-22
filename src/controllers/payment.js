@@ -13,26 +13,30 @@ const bookingModel = require('../models/mybooking')
 const payment = require('../models/payment')
 const ticketModel = require('../models/ticket')
 const recieptModel = require('../models/reciept')
+const userModel = require('../models/user')
 
 module.exports= {
   topUpBalance: async (req, res) => {
     //ganti jadi req.user nanti
     let {id:user_id} = req.user
     if(!user_id){return responseStandard(res, 'Access Forbidden!', {}, 500, false)}
-
+    
     const schemaPayment = joi.object({
-      nominal: joi.number().required()
+      nominal: joi.number().required(),
+      email: joi.string().email().required()
     })
-    let { value: nominal, err } = schemaPayment.validate(req.body)
-    console.log(nominal)
+    let { value: data, err } = schemaPayment.validate(req.body)
+    console.log(data)
     if (err) {return responseStandard(res, err.message, {error: error.message}, 400, false)}
-    nominal = nominal.nominal
+    let {nominal, email} = data
     console.log(nominal)
     try{
-      let [{balance}] = await payment.getUserBalance(user_id)
+      let result = await userModel.getDetailProfile({email})
+      if(!result.length) {return responseStandard(res, 'Email is invalid!', {}, 400, false)}
+      let [{id,balance}] = result
       balance = balance + nominal
       
-      let topUp = await payment.topUpBalance(balance, user_id)
+      let topUp = await payment.topUpBalance(balance, id)
 
       if (topUp.affectedRows) {
         return responseStandard(res, 'Top Up succesfull!', {balance})
