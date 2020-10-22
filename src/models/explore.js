@@ -14,7 +14,7 @@ module.exports = {
     return await getFromDB(query)
   },
   countPopularCity: async (tables=table) => {
-    query = `SELECT count(id)
+    query = `SELECT count(id) as count
             FROM (
               SELECT *
               FROM ${tables}
