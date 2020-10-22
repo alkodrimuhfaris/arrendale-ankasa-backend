@@ -25,7 +25,20 @@ module.exports = {
             const page = paging.pagination(req, countTotalDetailFlight[0].count)
             let { offset=0, pageInfo } = page
             let { limitData: limit=5 } = pageInfo
+            let origin = 0
+            let destination = 0
             if (typeof search === 'object') {
+                if(search.origin || search.destination){
+                    let resultOrigin = await cityModel.getCityId(search.origin)
+                    if(!resultOrigin.length){return responseStandard(res, 'Flight not found', {}, 401, false)}
+                    let [{id:origin_id}] = resultOrigin
+                    let resultDestination = await cityModel.getCityId(search.destination)
+                    if(!resultDestination.length){return responseStandard(res, 'Flight not found', {}, 401, false)}
+                    let [{id:destination_id}] = resultDestination
+                    origin = origin_id
+                    destination = destination_id
+                    Object.assign(search, {origin:origin_id, destination:destination_id})
+                }
                 searchKey = Object.keys(search)[0]
                 searchValue = Object.values(search)[0]
             } else {
@@ -40,9 +53,6 @@ module.exports = {
             orderByKey = 'id'
             orderByValue = orderBy || 'ASC'
             }
-
-            let data = await detailFlightModel.getFlight()
-            let {origin, destination} = data[0]
 
             let [{city_name:origin_city_name, 
                 country_code:origin_city_country}] = await cityModel.getCityCountry(origin)

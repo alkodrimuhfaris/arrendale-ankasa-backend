@@ -9,6 +9,12 @@ module.exports = {
             WHERE id = ?`
     return await getFromDB(query, city_id)
   },
+  getCityId: async(city_name) => {
+    query = `SELECT id
+            FROM city
+            WHERE city_name = ?`
+    return await getFromDB(query,city_name)
+  },
   getTrendingCity: async (limiter, from, to) => {
     from = from || new Date(Date.now() - 30*24*60*60*1000).toISOString().slice(0, 19).replace('T', ' ')
     to = to ||  new Date(Date.now()).toISOString().slice(0, 19).replace('T', ' ')
