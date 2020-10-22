@@ -29,6 +29,8 @@ const faciliesRouter = require('./src/routes/facilities')
 const transitRouter = require('./src/routes/transit')
 const detailFlightRouter = require('./src/routes/detailFlight')
 const resetPasswordRouter = require('./src/routes/forgotPassword')
+const recieptRouter = require('./src/routes/reciept')
+const ticketRouter = require('./src/routes/ticket')
 
 app.use('/auth', authRouter)
 app.use('/user', userRouter)
@@ -44,6 +46,8 @@ app.use('/destination', destinationListRouter)
 // app.use('/class', classFlightRouter)
 app.use('/transit', transitRouter)
 app.use('/resetpassword', resetPasswordRouter)
+app.use('/reciept', recieptRouter)
+app.use('/ticket', ticketRouter)
 
 
 app.listen(8000, () => {

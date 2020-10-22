@@ -5,7 +5,7 @@ const {
 } = process.env
 
 module.exports = {
-  paging: (count = 0, page = 1, limit = 5, tables, req) => {
+  paging: (count = 0, page = 1, limit = 10, tables, req) => {
     let pages = 1
     if (limit === '-'){
       page=1
