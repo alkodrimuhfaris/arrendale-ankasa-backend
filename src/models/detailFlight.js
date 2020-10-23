@@ -9,12 +9,14 @@ let query = ''
 let newQuery = `SELECT 
                 flight.id, 
                 airlines.name, 
-                airlines.logo AS airlines_logo, 
+                airlines.logo AS airlines_logo,
                 flight_detail.seat_count, 
                 flight_detail.class_name, 
                 transit.name AS transit,                 
+                origin,
                 flight.departure_date, 
                 flight.departure_time,
+                destination, 
                 flight.arrived_date, 
                 flight.arrived_time, 
                 flight_detail.price FROM 
