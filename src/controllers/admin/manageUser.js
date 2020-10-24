@@ -1,8 +1,8 @@
 const bcrypt = require('bcrypt')
-const responseStandard = require('../helpers/responseStandard')
+const responseStandard = require('../../helpers/responseStandard')
 const joi = require('joi')
 
-const userModel = require('../models/user')
+const userModel = require('../../models/user/user')
 
 
 module.exports = {

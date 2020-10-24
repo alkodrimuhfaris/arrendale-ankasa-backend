@@ -23,6 +23,7 @@ const manageCityRouter = require('./src/routes/admin/manageCity')
 const facilityRouter = require('./src/routes/admin/facilities')
 const transitRouter = require('./src/routes/admin/transit')
 const topUpRouter = require('./src/routes/admin/topUp')
+const manageUserRouter = require('./src/routes/admin/manageUser')
 
 
 
@@ -51,6 +52,7 @@ app.use('/manage/city', manageCityRouter)
 app.use('/manage/facility', facilityRouter)
 app.use('/manage/transit', transitRouter)
 app.use('/manage/topup', topUpRouter)
+app.use('/manage/user', manageUserRouter)
 
 // USER 
 app.use('/auth/user', authUser)
@@ -75,7 +77,6 @@ app.use('/searchticket', searchTicketRouter)
 // app.use('/resetpassword', resetPasswordRouter)
 
 
-// PUBLIC
 
 
 app.listen(8000, () => {
