@@ -8,7 +8,7 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 app.use(express.static('public'))
 
-const cityModel = require('../../models/city')
+const cityModel = require('../../models/public/city')
 
 module.exports = {
   getPopularCity: async (req, res) => {
@@ -50,12 +50,11 @@ module.exports = {
   searchCity: async (req, res) => {
     try{
       const {city_name} = req.body
-      const result = await cityModel.getCityIdLike(city_name)
-      if (result.length) {
-        return responseStandard(res, 'List of city', {result, pageInfo})
+      const results = await cityModel.getCityIdLike(city_name)
+      if (results.length) {
+        return responseStandard(res, 'List of city', {results})
       }
       else {
-        const pageInfo = pagination.paging(count, page, limit, path, req)
         return responseStandard(res, 'There is no city in the list')
       }
     } catch (er) {

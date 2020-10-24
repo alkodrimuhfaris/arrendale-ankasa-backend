@@ -70,6 +70,9 @@ app.use('/explore', exploreRouter)
 app.use('/searchticket', searchTicketRouter)
 app.use('/city', cityRouter)
 
+app.use('/uploads', express.static('./assets/uploads'))
+app.use('/public', express.static('./assets/public'))
+
 
 // app.use('/user', userRouter)
 // app.use('/admin', adminRouter)

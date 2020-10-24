@@ -15,6 +15,12 @@ module.exports = {
             WHERE city_name = ?`
     return await getFromDB(query,city_name)
   },
+  getCityIdLike: async(city_name) => {
+    query = `SELECT id, city_name, country_name, country_code
+            FROM city
+            WHERE city_name LIKE "%${city_name}%"`
+    return await getFromDB(query)
+  },
   getTrendingCity: async (limiter, from, to) => {
     from = from || new Date(Date.now() - 30*24*60*60*1000).toISOString().slice(0, 19).replace('T', ' ')
     to = to ||  new Date(Date.now()).toISOString().slice(0, 19).replace('T', ' ')
@@ -52,18 +58,57 @@ module.exports = {
             ORDER BY city_activity.destination_counter  DESC`
     return await getFromDB(query)
   },
+  getPopularCity: async (limiter, tables=table) => {
+    from = from || new Date(Date.now() - 30*24*60*60*1000).toISOString().slice(0, 19).replace('T', ' ')
+    to = to ||  new Date(Date.now()).toISOString().slice(0, 19).replace('T', ' ')
+    query = `SELECT *
+            FROM city
+            LEFT JOIN (
+              SELECT 	city_id, sum(search_counter) as search_counter
+              FROM (
+                  SELECT *
+                  FROM city_activity
+                  WHERE created_at BETWEEN "${from}" AND "${to}"
+              ) AS city_activity_filter
+              GROUP BY city_id
+            ) as city_activity
+            ON city.id = city_activity.city_id  
+            ORDER BY city_activity.search_counter DESC
+            ${limiter}`
+    return await getFromDB(query)
+  },
+  countPopularCity: async (tables=table) => {
+    from = from || new Date(Date.now() - 30*24*60*60*1000).toISOString().slice(0, 19).replace('T', ' ')
+    to = to ||  new Date(Date.now()).toISOString().slice(0, 19).replace('T', ' ')
+    query = `SELECT count(city.id) as count
+            FROM city
+            LEFT JOIN (
+              SELECT 	city_id, sum(search_counter) as search_counter
+              FROM (
+                  SELECT *
+                  FROM city_activity
+                  WHERE created_at BETWEEN "${from}" AND "${to}"
+              ) AS city_activity_filter
+              GROUP BY city_id
+            ) as city_activity
+            ON city.id = city_activity.city_id  
+            ORDER BY city_activity.search_counter DESC`
+    return await getFromDB(query)
+  },
   addCityActivity: async (quantity) => {
     query = `INSERT INTO city_activity
             SET ? `
     return await getFromDB(query, quantity)
   },
-  createCity: async (data=[]) => {
+  createCity: async (data) => {
     query = `INSERT INTO city
-            (city_name, country_code, city_picture, rating)`
+            SET ?`
     return await getFromDB(query, data)
   },
-  updateCity: async (data={}) => {
-    query = `UPDATE city SET ?`
-    return await getFromDB(quert, data)
+  updateCity: async (data, city_id) => {
+    query = `UPDATE city
+            SET ?
+            WHERE ?`
+    return await getFromDB(quert, [data, city_id])
   }
 }

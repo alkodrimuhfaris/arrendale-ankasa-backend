@@ -9,13 +9,10 @@ app.use(bodyParser.json())
 app.use(express.static('public'))
 
 const {
+  getTrendingCity,
+  getTrendingCityCount,
   getPopularCity,
   countPopularCity
-} = require('../../models/public/explore')
-
-const {
-  getTrendingCity,
-  getTrendingCityCount
 } = require('../../models/public/city')
 
 module.exports = {
