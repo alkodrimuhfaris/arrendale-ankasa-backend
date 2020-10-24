@@ -10,11 +10,12 @@ module.exports = {
         try {
             let result = await detailFlightModel.getDetailFlightByConditions(id)
             if(result.length > 0) {
-                return responseStandard(res, `DetailFlight with Id ${id}`, {data})
+                return responseStandard(res, `DetailFlight with Id ${id}`, {result})
             } else {
                 return responseStandard(res, 'DetailFlight Not found', {}, 401, false)
             }
         } catch (e) {
+            console.log(e)
             return responseStandard(res, e.message, {}, 500, false)
         }
     },
@@ -53,12 +54,7 @@ module.exports = {
             orderByKey = 'id'
             orderByValue = orderBy || 'ASC'
             }
-
-            let [{city_name:origin_city_name, 
-                country_code:origin_city_country}] = await cityModel.getCityCountry(origin)
-                
-            let [{city_name:destination_city_name, 
-                country_code:destination_city_country}] = await cityModel.getCityCountry(destination)            
+          
 
             if (searchKey === 'departure_time' || searchKey === 'arrived_time') {
                 console.log('true')
@@ -66,11 +62,16 @@ module.exports = {
                 let result = await detailFlightModel.searchTime([searchKey, searchValue, orderByKey, orderByValue, limit, offset])
                 
                 if (result.length) {
-                    result = result.map(item => {
+                    let newResult = []
+                    for (let item of result){
+                        let [{city_name:origin_city_name, 
+                            country_code:origin_city_country}] = await detailFlightModel.getCityCountry(item.origin)
+                        let [{city_name:destination_city_name, 
+                            country_code:destination_city_country}] = await detailFlightModel.getCityCountry(item.destination)  
                         Object.assign(item, {origin_city_name, origin_city_country, destination_city_name, destination_city_country})
-                        return item
-                    })
-                    return responseStandard(res, `List of DetailFlight`, {result, pageInfo})
+                        newResult.push(item)
+                    }
+                    return responseStandard(res, `List of DetailFlight`, {newResult, pageInfo})                        
                 } else {
                     return responseStandard(res, `Nothing found here`, {pageInfo}, 500, false)
                 }
@@ -78,11 +79,16 @@ module.exports = {
                 console.log('true')
                 let result = await detailFlightModel.searchPrice([searchKey, searchValue, orderByKey, orderByValue, limit, offset])
                 if (result.length) {
-                    result = result.map(item => {
+                    let newResult = []
+                    for (let item of result){
+                        let [{city_name:origin_city_name, 
+                            country_code:origin_city_country}] = await detailFlightModel.getCityCountry(item.origin)
+                        let [{city_name:destination_city_name, 
+                            country_code:destination_city_country}] = await detailFlightModel.getCityCountry(item.destination)  
                         Object.assign(item, {origin_city_name, origin_city_country, destination_city_name, destination_city_country})
-                        return item
-                    })
-                    return responseStandard(res, `List of DetailFlight`, {result, pageInfo})
+                        newResult.push(item)
+                    }
+                    return responseStandard(res, `List of DetailFlight`, {newResult, pageInfo})        
                 } else {
                     return responseStandard(res, `Nothing found here`, {pageInfo}, 500, false)
                 }
@@ -90,15 +96,20 @@ module.exports = {
 
             let result = await detailFlightModel.getDetailFlight([searchKey, searchValue, orderByKey, orderByValue, limit, offset])
             if (result.length) {
-                result = result.map(item => {
+                let newResult = []
+                console.log(result)
+                for (let item of result){
+                    let [{city_name:origin_city_name, 
+                        country_code:origin_city_country}] = await detailFlightModel.getCityCountry(item.origin)
+                    let [{city_name:destination_city_name, 
+                        country_code:destination_city_country}] = await detailFlightModel.getCityCountry(item.destination)  
                     Object.assign(item, {origin_city_name, origin_city_country, destination_city_name, destination_city_country})
-                    return item
-                })
-                return responseStandard(res, `List of DetailFlight`, {result, pageInfo})
+                    newResult.push(item)
+                }
+                return responseStandard(res, `List of DetailFlight`, {newResult, pageInfo})    
             } else {
                 return responseStandard(res, `Nothing found here`, {pageInfo}, 500, false)
             }
-
         } catch (e) {
             return responseStandard(res, e.message, {}, 500, false)
         }

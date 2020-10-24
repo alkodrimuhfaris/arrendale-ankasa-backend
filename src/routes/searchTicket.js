@@ -3,7 +3,7 @@ const { Router } = require('express')
 const {
     getDetailFlightById,
     getDetailFlight
-} = require('../controllers/detailFlight')
+} = require('../controllers/searchTicket')
 
 const authMiddleware = require('../middlewares/authentication')
 

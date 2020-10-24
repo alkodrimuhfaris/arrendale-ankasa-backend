@@ -9,12 +9,14 @@ let query = ''
 let newQuery = `SELECT 
                 flight.id, 
                 airlines.name, 
-                airlines.logo AS airlines_logo, 
+                airlines.logo AS airlines_logo,
                 flight_detail.seat_count, 
                 flight_detail.class_name, 
                 transit.name AS transit,                 
+                origin,
                 flight.departure_date, 
                 flight.departure_time,
+                destination, 
                 flight.arrived_date, 
                 flight.arrived_time, 
                 flight_detail.price FROM 
@@ -26,9 +28,15 @@ let newQuery = `SELECT
                     INNER JOIN 
                     flight_detail 
                     ON flight.id = flight_detail.id 
-                    INNER JOIN facilities 
-                    ON 
-                    flight_detail.id = facilities.flight_id 
+                    LEFT JOIN (
+                        SELECT 
+                          flight_id, 
+                          max(case when facility_name = 'Luggage' then true END) 'luggage',
+                          max(case when facility_name = 'In-Flight Meal' then true END) 'in_flight_meal',
+                          max(case when facility_name = 'Wi-Fi' then true END) 'wifi'
+                        from facilities
+                        group by flight_id
+                      ) as facilites
                     INNER JOIN 
                     transit 
                     ON 
@@ -56,7 +64,7 @@ module.exports = {
         return await getFromDB(query)
     },
     getDetailFlight: async (data=[id, '']) =>{
-        console.log(data)
+        // console.log(data)
         console.log('disini')
         query = `${newQuery} 
                  WHERE ${data[0]} 

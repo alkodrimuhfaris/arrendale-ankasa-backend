@@ -4,7 +4,6 @@ const city = require('../controllers/city')
 
 const router = Router()
 
-router.get('/popular', city.getPopularCity)
-router.get('/trending', city.getMostVisitedCity)
+router.get('/search', city.searchCity)
 
 module.exports = router

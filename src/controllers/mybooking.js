@@ -1,11 +1,11 @@
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
-const {v1:uuidv1} = require('uuid')
+const {v4:uuidv4} = require('uuid')
 
 const mybookingModel = require('../models/mybooking')
 const cpAndPassangerModel = require('../models/cpAndPassanger')
-const flightModel = require('../models/flight')
+const flightModel = require('../models/flightToBooking')
 const paymentModel = require('../models/payment')
 const ticketModel = require('../models/ticket')
 const recieptModel = require('../models/reciept')
@@ -221,6 +221,9 @@ module.exports = {
             destination,
             arrived_date,
             arrived_time,
+            luggage,
+            in_flight_meal,
+            wifi,
             price
           }] = await flightModel.getFlightByDetail(flight_detail_id)
       
@@ -275,7 +278,10 @@ module.exports = {
         arrived_time,
         insurance,
         price: price + insurancePrice,
-        status              
+        status,
+        luggage,
+        in_flight_meal,
+        wifi        
       }
 
       //asign booking
@@ -306,7 +312,7 @@ module.exports = {
           let displayTicket = []
 
           let ticketData = [...Array(quantity)].map((item, index) => {
-            let ticket_code = uuidv1()
+            let ticket_code = uuidv4()
             item = {...bookingData,
                     passanger_title: passangerDetail[index].title,
                     passanger_full_name: passangerDetail[index].full_name,
@@ -316,11 +322,11 @@ module.exports = {
             delArr.forEach(props => delete item[props])
             displayTicket.push(item)
             item = Object.values(item)
-            return [item]
+            return item
           })
 
           //create ticket
-          const assignTicket = await ticketModel.createTicket(ticketData)
+          const assignTicket = await ticketModel.createTicket([ticketData])
 
           if (assignTicket){
             //data for reciept

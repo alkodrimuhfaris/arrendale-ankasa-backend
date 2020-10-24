@@ -15,6 +15,12 @@ module.exports = {
             WHERE city_name = ?`
     return await getFromDB(query,city_name)
   },
+  getCityIdLike: async(city_name) => {
+    query = `SELECT id, city_name, country_name, country_code
+            FROM city
+            WHERE city_name LIKE "%?%"`
+    return await getFromDB(query,city_name)
+  },
   getTrendingCity: async (limiter, from, to) => {
     from = from || new Date(Date.now() - 30*24*60*60*1000).toISOString().slice(0, 19).replace('T', ' ')
     to = to ||  new Date(Date.now()).toISOString().slice(0, 19).replace('T', ' ')
@@ -52,18 +58,36 @@ module.exports = {
             ORDER BY city_activity.destination_counter  DESC`
     return await getFromDB(query)
   },
+  getPopularCity: async (limiter, tables=table) => {
+    query = `SELECT *
+            FROM ${tables}
+            ORDER BY rating DESC
+            ${limiter}`
+    return await getFromDB(query)
+  },
+  countPopularCity: async (tables=table) => {
+    query = `SELECT count(id) as count
+            FROM (
+              SELECT *
+              FROM ${tables}
+              ORDER BY rating DESC
+            ) as ${tables}`
+    return await getFromDB(query)
+  },
   addCityActivity: async (quantity) => {
     query = `INSERT INTO city_activity
             SET ? `
     return await getFromDB(query, quantity)
   },
-  createCity: async (data=[]) => {
+  createCity: async (data) => {
     query = `INSERT INTO city
-            (city_name, country_code, city_picture, rating)`
+            SET ?`
     return await getFromDB(query, data)
   },
-  updateCity: async (data={}) => {
-    query = `UPDATE city SET ?`
-    return await getFromDB(quert, data)
+  updateCity: async (data, city_id) => {
+    query = `UPDATE city
+            SET ?
+            WHERE ?`
+    return await getFromDB(quert, [data, city_id])
   }
 }

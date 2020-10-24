@@ -34,6 +34,7 @@ module.exports = {
         let { id } = req.params
         id = Number(id)
         const schema = joi.object({
+            
             name: joi.string(),
             price: joi.number(),
             total_seat: joi.number()

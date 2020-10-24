@@ -1,6 +1,5 @@
 const db = require('../helpers/db')
 const getFromDB = require('../helpers/promiseToDB')
-const transactionToDB = require('../helpers/transactionToDB')
 
 let query = ''
 
@@ -85,7 +84,10 @@ module.exports = {
                 arrived_time,
                 insurance,
                 price,
-                status
+                status,
+                luggage,
+                in_flight_meal,
+                wifi
               FROM booking
             ) AS booking
             LEFT JOIN (
