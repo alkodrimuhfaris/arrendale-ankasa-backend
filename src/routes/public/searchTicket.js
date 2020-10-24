@@ -5,11 +5,10 @@ const {
     getDetailFlight
 } = require('../../controllers/public/searchTicket')
 
-const authMiddleware = require('../../middlewares/authentication')
 
 const router = Router()
 
-router.get('/:id', authMiddleware.authUser, getDetailFlightById)
-router.get('/',authMiddleware.authUser,  getDetailFlight)
+router.get('/:id', getDetailFlightById)
+router.get('/',  getDetailFlight)
 
 module.exports = router

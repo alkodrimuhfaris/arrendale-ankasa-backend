@@ -1,5 +1,5 @@
 const { Router } = require('express')
-const city = require('../controllers/city')
+const city = require('../../controllers/public/city')
 
 
 const router = Router()

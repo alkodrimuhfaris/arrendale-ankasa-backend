@@ -34,11 +34,11 @@ const recieptRouter = require('./src/routes/user/reciept')
 const ticketRouter = require('./src/routes/user/ticket')
 const paymentRouter = require('./src/routes/user/payment')
 const resetPasswordRouter = require('./src/routes/user/forgotPassword')
+const searchTicketRouter = require('./src/routes/public/searchTicket')
 
 
 // PUBLIC ROUTES
 const exploreRouter = require('./src/routes/public/explore')
-const searchTicketRouter = require('./src/routes/public/searchTicket')
 // const cityRouter = require('./src/routes/public/city')
 
 

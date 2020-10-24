@@ -24,10 +24,12 @@ module.exports = {
             try {
                 const isExist = await authModel.checkUserExist({ email })
                 if (isExist.length > 0) {
+                    let city_id = isExist[0].city_id ? isExist[0].city_id : 9
+                    console.log(isExist)
                     if (isExist[0].password) {
                         bcrypt.compare(password, isExist[0].password, (err, result) => {
                             if(result) {
-                                jwt.sign({id: isExist[0].id, role_id: isExist[0].role_id}, APP_KEY, {expiresIn: 1511}, (err, token)=>{
+                                jwt.sign({id: isExist[0].id, role_id: isExist[0].role_id, city_id, identifier:0}, APP_KEY, {expiresIn: 1511}, (err, token)=>{
                                     return responseStandard(res, {token: token}, {}, 200, true)
                                 }) 
                             }
@@ -68,16 +70,23 @@ module.exports = {
                         ...results,
                         role_id: 3,
                         password: hashedPassword,
+                        uniqueKey: 0
                     }
                     const data = await authModel.signUp(results)
                     if (data.affectedRows) {
-                        return responseStandard(res, 'Success to signup', {}, 200, true)
+                        results = {
+                            id: data.insertId,
+                            ...results
+                        }
+                        delete results.password
+                        delete results.uniqueKey
+                        return responseStandard(res, 'Success to signup', { results }, 200, true)
                     } else {
                         return responseStandard(res, 'Failed to signup', {}, 401, false)
                     }
                 }
             } catch (e) {
-                return responseStandard(res, e.message, {}, 500, false)
+                return responseStandard(res, e.message, {}, 401, false)
             }
         }
     },
