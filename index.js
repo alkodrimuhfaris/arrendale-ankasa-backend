@@ -35,11 +35,12 @@ const ticketRouter = require('./src/routes/user/ticket')
 const paymentRouter = require('./src/routes/user/payment')
 const resetPasswordRouter = require('./src/routes/user/forgotPassword')
 const searchTicketRouter = require('./src/routes/public/searchTicket')
+const userRouter = require('./src/routes/user/user')
 
 
 // PUBLIC ROUTES
 const exploreRouter = require('./src/routes/public/explore')
-// const cityRouter = require('./src/routes/public/city')
+const cityRouter = require('./src/routes/public/city')
 
 
 // const resetPasswordRouter = require('./src/routes/forgotPassword')
@@ -61,12 +62,13 @@ app.use('/user/reciept', recieptRouter)
 app.use('/user/ticket', ticketRouter)
 app.use('/mybook', bookingRouter)
 app.use('/payment', paymentRouter)
+app.use('/user', userRouter)
 
 
 // PUBLIC
 app.use('/explore', exploreRouter)
 app.use('/searchticket', searchTicketRouter)
-// app.use('city', cityRouter)
+app.use('/city', cityRouter)
 
 
 // app.use('/user', userRouter)

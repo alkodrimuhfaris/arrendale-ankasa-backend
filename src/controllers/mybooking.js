@@ -48,7 +48,6 @@ module.exports = {
     }
   },
   getBookingById: async (req, res) => {
-    //ganti jadi req.user
     let {id:user_id} =  req.user
     user_id = Number(user_id)
 

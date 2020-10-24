@@ -181,7 +181,7 @@ module.exports = {
                 WHERE ?`
         return await getFromDB(query, data)
       },
-      getFlightByDetail: async (data) => {
+      getFlightByDetail: async (flight_id) => {
         query =  `SELECT *
                   FROM flight_detail
                   LEFT JOIN (
@@ -202,8 +202,18 @@ module.exports = {
                     ON flight.airlines_id = airlines.id
                   ) as flight
                   ON flight_detail.flight_id = flight.flight_id
+                  LEFT JOIN (
+                    SELECT 
+                      flight_id, 
+                      max(case when facility_name = 'Luggage' then true END) 'luggage',
+                      max(case when facility_name = 'In-Flight Meal' then true END) 'in_flight_meal',
+                      max(case when facility_name = 'Wi-Fi' then true END) 'wifi'
+                    from facilities
+                    group by flight_id
+                  ) as facilites
+                  ON flight_detail.flight_id = facilites.flight_id
                   WHERE flight_detail.id = ?`
-        return await getFromDB(query, data)
+          return await getFromDB(query, flight_id)
       },
       updateFlightSeat: async (data) => {
         query = `UPDATE flight_detail
@@ -217,50 +227,50 @@ module.exports = {
                 WHERE id = ?`
         return await getFromDB(query, data)
       },
-    getFlightByConditions: async (data, tables=table) =>{
-        query = `SELECT 
-                 * FROM 
-                 ${tables} 
-                 WHERE ?`
-        
-        return await getFromDB(query, data)
-    },
-    getFlight: async (tables=table) =>{
-        query = `SELECT * 
-                 FROM ${tables}`
-        
-        return await getFromDB(query)
-    },
-    createFlight: async (data={}, tables=table) => {
-        query = `INSERT 
-                 INTO ${tables} 
-                 SET ?`
-        
-        return await getFromDB(query, data)
-    },
-    countFlight: async (data, tables=table) => {
-        query = `SELECT 
-                 COUNT(*) 
-                 AS count 
-                 FROM ${tables} 
-                 WHERE 
-                 departure_time = '${data}'`
-                 
-        return await getFromDB(query)
-    },
-    updateFlight: async (data={}, id, tables=table) => {
-        query = `UPDATE 
-                 ${tables} 
-                 SET ? 
-                 WHERE id=${id}`
+      getFlightByConditions: async (data, tables=table) =>{
+          query = `SELECT 
+                  * FROM 
+                  ${tables} 
+                  WHERE ?`
+          
+          return await getFromDB(query, data)
+      },
+      getFlight: async (tables=table) =>{
+          query = `SELECT * 
+                  FROM ${tables}`
+          
+          return await getFromDB(query)
+      },
+      createFlight: async (data={}, tables=table) => {
+          query = `INSERT 
+                  INTO ${tables} 
+                  SET ?`
+          
+          return await getFromDB(query, data)
+      },
+      countFlight: async (data, tables=table) => {
+          query = `SELECT 
+                  COUNT(*) 
+                  AS count 
+                  FROM ${tables} 
+                  WHERE 
+                  departure_time = '${data}'`
+                  
+          return await getFromDB(query)
+      },
+      updateFlight: async (data={}, id, tables=table) => {
+          query = `UPDATE 
+                  ${tables} 
+                  SET ? 
+                  WHERE id=${id}`
 
-        return await getFromDB(query, data)                
-    },
-    deleteFlight: async (data, tables=table) => {
-        query = `DELETE 
-                 FROM ${tables} 
-                 WHERE ?`
-        
-        return await getFromDB(query, data)                                 
-    }
+          return await getFromDB(query, data)                
+      },
+      deleteFlight: async (data, tables=table) => {
+          query = `DELETE 
+                  FROM ${tables} 
+                  WHERE ?`
+          
+          return await getFromDB(query, data)                                 
+      }
 }
