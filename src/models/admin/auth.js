@@ -6,8 +6,7 @@ module.exports = {
     checkUserExist: async (data, tables=table) =>{
         query = `SELECT * 
                  FROM ${tables}
-                 WHERE ?`
-                
+                 WHERE ?`        
         return await getFromDB(query, data)
     },
     signUp: async (data={}, tables=table) => {
@@ -22,5 +21,12 @@ module.exports = {
                  WHERE id=${uid}`
         
         return await getFromDB(query, data)                                  
+    },
+    updateUser: async (data={}, user_id={}, tables=table) => {
+        query = `UPDATE ${tables}
+                SET ?
+                WHERE ?`
+
+        return await getFromDB(query, [data, user_id])
     }
 }

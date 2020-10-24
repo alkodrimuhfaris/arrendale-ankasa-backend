@@ -65,7 +65,6 @@ module.exports = {
         try {
             let adminCheck = await authModel.checkUserExist({id:identifier}, 'uuid_admin')
             if(adminCheck[0].user_id !== id) {return responseStandard(res, 'Access Forbidden!', {}, 403, false)}
-
             
             let { value: results, error } = schema.validate(req.body)
             if (error) {
@@ -105,32 +104,38 @@ module.exports = {
             return responseStandard(res, e.message, {}, 401, false)
         }
     },
-    forgotPassword: async(req, res) => {
-        const schema = joi.object({
-            password: joi.string().required()
-        })
+    updatePassword: async (req, res) => {
+        let {id, identifier} = req.user
+        if(!id) {return responseStandard(res, 'Forbidden Access!', {}, 400, false)}
+        try {
+            let adminCheck = await authModel.checkUserExist({id:identifier}, 'uuid_admin')
+            if(adminCheck[0].user_id !== id) {return responseStandard(res, 'Access Forbidden!', {}, 403, false)}
+            let adminData = await authModel.checkUserExist({id})
 
-        let { value: results, error } = schema.validate(req.body)
-        if (error) {
-            return responseStandard(res, 'Error', {error: error.message}, 400, false)
-        } else {
-            const { email, password } = results
-            try {
-                const isExist = await authModel.checkUserExist({ email })
-                if (isExist.length > 0) {
+            const schema = joi.object({
+                oldPassword: joi.string().required(),
+                newPassword: joi.string().required(),
+                confirmPassword: joi.ref('newPassword')
+            })
+            let { value: results, error } = schema.validate(req.body)
+            if (error) {return responseStandard(res, 'Error', {error: error.message}, 400, false)}
+            const { oldPassword, newPassword } = results
+            const {password} = adminData[0]
+            bcrypt.compare(oldPassword, password, async (err, result) => {
+                if(result) {
                     const salt = await bcrypt.genSalt(10)
-                    const hashedPassword = await bcrypt.hash(password, salt)
-                    results = {
-                        password: hashedPassword,
-                    }
-                    const data = await authModel.signUp(results)
-                    if (data.affectedRows) {
-                        return responseStandard(res, 'Success to change password', { results }, 200, true)
+                    const password = await bcrypt.hash(newPassword, salt)
+                    let patchPassword = await authModel.updateUser({password}, {id})
+                    if (patchPassword.affectedRows){
+                        return responseStandard(res, 'Password updated!', {}, 200, true)    
                     }
                 }
-            } catch (e) {
-                return responseStandard(res, e.message, {}, 401, false)                
-            }
+                else {
+                    return responseStandard(res, 'Old password is wrong!', {}, 400, false)
+                }
+            })
+        } catch (e) {
+            return responseStandard(res, e.message, {}, 401, false)                
         }
     }
 }

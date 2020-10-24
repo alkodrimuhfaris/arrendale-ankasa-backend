@@ -47,7 +47,7 @@ module.exports = {
             const salt = await bcrypt.genSalt(10)
             newPassword = await bcrypt.hash(newPassword, salt)
     
-            let userData = await userModel.getDetailProfile({email})
+            let userData = await adminAuth.checkUserExist({email})
             if(!userData.length) {return responseStandard(res, 'User not found',{}, 400, false)}
 
             let {reset_code, id, uniqueKey} = userData[0]
