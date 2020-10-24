@@ -58,7 +58,7 @@ module.exports = {
             ORDER BY city_activity.destination_counter  DESC`
     return await getFromDB(query)
   },
-  getPopularCity: async (limiter, tables=table) => {
+  getPopularCity: async (limiter, from, to) => {
     from = from || new Date(Date.now() - 30*24*60*60*1000).toISOString().slice(0, 19).replace('T', ' ')
     to = to ||  new Date(Date.now()).toISOString().slice(0, 19).replace('T', ' ')
     query = `SELECT *
@@ -77,7 +77,7 @@ module.exports = {
             ${limiter}`
     return await getFromDB(query)
   },
-  countPopularCity: async (tables=table) => {
+  countPopularCity: async (from, to) => {
     from = from || new Date(Date.now() - 30*24*60*60*1000).toISOString().slice(0, 19).replace('T', ' ')
     to = to ||  new Date(Date.now()).toISOString().slice(0, 19).replace('T', ' ')
     query = `SELECT count(city.id) as count

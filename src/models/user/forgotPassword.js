@@ -9,6 +9,14 @@ module.exports = {
                  SET ? 
                  WHERE email='${user}'`
         
-        return await getFromDB(query, data)                                  
+        return await getFromDB(query, data)
+    },
+    changePassword: async (password, id, tables=table) => {
+        query = `UPDATE 
+                ${tables} 
+                SET ? 
+                WHERE ?`
+
+        return await getFromDB(query, [password, id])
     }
 }

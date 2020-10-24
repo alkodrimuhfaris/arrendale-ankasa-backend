@@ -19,6 +19,7 @@ module.exports = {
   getPopularCity: async (req, res) => {
     const path = 'explore/popular'
     try {
+      req.query.limit = req.query.limit || 10
       const {page,limit,limiter} = pagination.pagePrep(req.query)
       const result = await getPopularCity(limiter)
       const [{count}] = await countPopularCity() || 0
@@ -37,6 +38,7 @@ module.exports = {
   getMostVisitedCity: async (req, res) => {
     const path= 'explore/trending'
     try {
+      req.query.limit = req.query.limit || 10
       const {page,limit,limiter} = pagination.pagePrep(req.query)
       const result = await getTrendingCity(limiter)
       const [{count}] = await getTrendingCityCount() || 0
