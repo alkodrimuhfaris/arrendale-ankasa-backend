@@ -20,26 +20,21 @@ module.exports = {
         }
     },
     getDetailFlight: async (req, res) => {
+        let {id:user_id} = req.user
+        if (!user_id) {return responseStandard(res, 'Log-in first to see the content!', {}, 403, false)}
         try {
             let countTotalDetailFlight = await detailFlightModel.countDetailFlight()
             let { search, orderBy } = req.query
             const page = paging.pagination(req, countTotalDetailFlight[0].count)
             let { offset=0, pageInfo } = page
             let { limitData: limit=5 } = pageInfo
-            let origin = Object.keys(search) ? search.origin : 3
-            let destination = Object.keys(search) ? search.destination : 1
+
+            if (Object.assign(search).length && search.destination){
+                let cityActivity = {city_id: search.destination, search_counter:1}
+                await cityModel.addCityActivity(cityActivity)
+            }
+
             if (typeof search === 'object') {
-                // if(search.origin || search.destination){
-                //     let resultOrigin = await cityModel.getCityId(search.origin)
-                //     if(!resultOrigin.length){return responseStandard(res, 'Flight not found', {}, 401, false)}
-                //     let [{id:origin_id}] = resultOrigin
-                //     let resultDestination = await cityModel.getCityId(search.destination)
-                //     if(!resultDestination.length){return responseStandard(res, 'Flight not found', {}, 401, false)}
-                //     let [{id:destination_id}] = resultDestination
-                //     origin = origin_id
-                //     destination = destination_id
-                //     Object.assign(search, {origin:origin_id, destination:destination_id})
-                // }
                 searchKey = Object.keys(search)[0]
                 searchValue = Object.values(search)[0]
             } else {

@@ -3,7 +3,7 @@ const app = express()
 const bodyParser = require('body-parser')
 const responseStandard = require('../helpers/responseStandard')
 const joi = require('joi')
-const {v1:uuidv1} = require('uuid')
+const {v4:uuidv4} = require('uuid')
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
@@ -86,7 +86,7 @@ module.exports= {
       let delArr = ['price','status', 'booking_code', 'id']
       let displayTicket = []
       let ticketData = bookingData.map(item => {
-        let ticket_code = uuidv1()
+        let ticket_code = uuidv4()
         Object.assign(item, {ticket_code})
         delArr.forEach(props => delete item[props])
         displayTicket.push(item)

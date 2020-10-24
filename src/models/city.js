@@ -59,19 +59,40 @@ module.exports = {
     return await getFromDB(query)
   },
   getPopularCity: async (limiter, tables=table) => {
+    from = from || new Date(Date.now() - 30*24*60*60*1000).toISOString().slice(0, 19).replace('T', ' ')
+    to = to ||  new Date(Date.now()).toISOString().slice(0, 19).replace('T', ' ')
     query = `SELECT *
-            FROM ${tables}
-            ORDER BY rating DESC
+            FROM city
+            LEFT JOIN (
+              SELECT 	city_id, sum(search_counter) as search_counter
+              FROM (
+                  SELECT *
+                  FROM city_activity
+                  WHERE created_at BETWEEN "${from}" AND "${to}"
+              ) AS city_activity_filter
+              GROUP BY city_id
+            ) as city_activity
+            ON city.id = city_activity.city_id  
+            ORDER BY city_activity.search_counter DESC
             ${limiter}`
     return await getFromDB(query)
   },
   countPopularCity: async (tables=table) => {
-    query = `SELECT count(id) as count
-            FROM (
-              SELECT *
-              FROM ${tables}
-              ORDER BY rating DESC
-            ) as ${tables}`
+    from = from || new Date(Date.now() - 30*24*60*60*1000).toISOString().slice(0, 19).replace('T', ' ')
+    to = to ||  new Date(Date.now()).toISOString().slice(0, 19).replace('T', ' ')
+    query = `SELECT count(city.id) as count
+            FROM city
+            LEFT JOIN (
+              SELECT 	city_id, sum(search_counter) as search_counter
+              FROM (
+                  SELECT *
+                  FROM city_activity
+                  WHERE created_at BETWEEN "${from}" AND "${to}"
+              ) AS city_activity_filter
+              GROUP BY city_id
+            ) as city_activity
+            ON city.id = city_activity.city_id  
+            ORDER BY city_activity.search_counter DESC`
     return await getFromDB(query)
   },
   addCityActivity: async (quantity) => {

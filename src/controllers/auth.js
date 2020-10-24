@@ -133,7 +133,9 @@ module.exports = {
         }
     },
     signUpAdminController: async(req, res) => {
-        let {id, identifier} = req.user
+        let {id, role_id, identifier} = req.user
+        if(role_id !== 1) {return responseStandard(res, 'Access Forbidden!', {}, 403, false)}
+        
         const schema = joi.object({
             username: joi.string().required(),
             email: joi.string().required(),
@@ -143,7 +145,6 @@ module.exports = {
             let adminCheck = await authModel.checkUserExist({id:identifier}, 'uuid_admin')
             if(adminCheck[0].user_id !== id) {return responseStandard(res, 'Access Forbidden!', {}, 403, false)}
 
-            
             
             let { value: results, error } = schema.validate(req.body)
             if (error) {
