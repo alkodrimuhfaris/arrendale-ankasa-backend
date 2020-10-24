@@ -7,8 +7,8 @@ const authMiddleware = require('../../middlewares/authentication')
 
 router.get('/', detailFlight.getAllDetailFlight)
 router.get('/:id', detailFlight.getDetailFlightByFlightId)
-router.post('/', detailFlight.createFlightDetail)
-router.patch('/:id', detailFlight.updateFlightDetail)
-router.delete('/:id', detailFlight.deleteFlightDetail)
+router.post('/', |authMiddleware.authUser, detailFlight.createFlightDetail)
+router.patch('/:id', authMiddleware.authUser, detailFlight.updateFlightDetail)
+router.delete('/:id', authMiddleware.authUser, detailFlight.deleteFlightDetail)
 
 module.exports = router
