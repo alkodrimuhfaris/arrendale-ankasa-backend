@@ -9,7 +9,7 @@ const authMiddleware = require('../middlewares/authentication')
 
 const router = Router()
 
-router.get('/:id', getDetailFlightById)
-router.get('/', getDetailFlight)
+router.get('/:id', authMiddleware.authUser, getDetailFlightById)
+router.get('/',authMiddleware.authUser,  getDetailFlight)
 
 module.exports = router

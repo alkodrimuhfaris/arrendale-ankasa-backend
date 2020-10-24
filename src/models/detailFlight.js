@@ -37,6 +37,7 @@ let newQuery = `SELECT
                         from facilities
                         group by flight_id
                       ) as facilites
+                    ON flight.id = facilites.flight_id
                     INNER JOIN 
                     transit 
                     ON 

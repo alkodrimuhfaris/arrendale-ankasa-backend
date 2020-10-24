@@ -20,8 +20,8 @@ module.exports = {
         }
     },
     getDetailFlight: async (req, res) => {
-        let {id:user_id} = req.user
-        if (!user_id) {return responseStandard(res, 'Log-in first to see the content!', {}, 403, false)}
+        // let {id:user_id} = req.user ? req.user : 0
+        // if (!req.user && !user_id) {return responseStandard(res, 'Log-in first to see the content!', {}, 403, false)}
         try {
             let countTotalDetailFlight = await detailFlightModel.countDetailFlight()
             let { search, orderBy } = req.query
@@ -29,9 +29,10 @@ module.exports = {
             let { offset=0, pageInfo } = page
             let { limitData: limit=5 } = pageInfo
 
-            if (Object.assign(search).length && search.destination){
+            if (search){
+                let destination = search.destination ? search.destination : 0
                 let cityActivity = {city_id: search.destination, search_counter:1}
-                await cityModel.addCityActivity(cityActivity)
+                destination && await cityModel.addCityActivity(cityActivity)
             }
 
             if (typeof search === 'object') {
