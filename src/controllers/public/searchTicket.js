@@ -78,7 +78,7 @@ module.exports = {
                         Object.assign(item, {origin_city_name, origin_city_country, destination_city_name, destination_city_country})
                         newResult.push(item)
                     }
-                    return responseStandard(res, `List of DetailFlight`, {newResult, pageInfo})                        
+                    return responseStandard(res, `List of DetailFlight`, {result:newResult, pageInfo})                        
                 } else {
                     return responseStandard(res, `Nothing found here`, {pageInfo}, 500, false)
                 }
@@ -95,7 +95,7 @@ module.exports = {
                         Object.assign(item, {origin_city_name, origin_city_country, destination_city_name, destination_city_country})
                         newResult.push(item)
                     }
-                    return responseStandard(res, `List of DetailFlight`, {newResult, pageInfo})        
+                    return responseStandard(res, `List of DetailFlight`, {result:newResult, pageInfo})        
                 } else {
                     return responseStandard(res, `Nothing found here`, {pageInfo}, 500, false)
                 }
@@ -113,7 +113,7 @@ module.exports = {
                     Object.assign(item, {origin_city_name, origin_city_country, destination_city_name, destination_city_country})
                     newResult.push(item)
                 }
-                return responseStandard(res, `List of DetailFlight`, {newResult, pageInfo})    
+                return responseStandard(res, `List of DetailFlight`, {result:newResult, pageInfo})    
             } else {
                 return responseStandard(res, `Nothing found here`, {pageInfo}, 500, false)
             }
