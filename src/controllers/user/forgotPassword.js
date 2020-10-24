@@ -5,6 +5,7 @@ const {v4:uuidv4} = require('uuid')
 const responseStandard = require('../../helpers/responseStandard')
 const forgotPasswordModel = require('../../models/user/forgotPassword')
 const authModel = require('../../models/user/auth')
+const joi = require('joi')
 
 module.exports = {
     resetPassword: async (req, res) => {
@@ -14,6 +15,8 @@ module.exports = {
 
         const check = await authModel.checkUserExist({ email: user })
         check.length && (resetcode = uuidv4())
+        resetcode = resetcode.slice(resetcode.length - 6).toUpperCase()
+        console.log(resetcode)
         
         result = await myEmail.mailHelper([email, resetcode])
         
@@ -27,9 +30,18 @@ module.exports = {
         }
     },
     matchResetCode: async (req, res) => {
-        let {resetcode, email} = req.body
+        let schema = joi.object({
+            email: joi.string().email().required(),
+            resetcode: joi.string().required(),
+            newPassword: joi.string().required(),
+            confirmNewPassword: joi.ref(newPassword)
+        })
+        let { value: credentials, error } = schema.validate(req.body)
+        if (error) {return responseStandard(res, 'Error', {error: error.message}, 400, false)} 
+        let {resetcode, newPassword} = credentials
+
         if (resetcode !== 0 && resetcode !== '') {
-            const check = await authModel.checkUserExist({ reset_code: resetcode })
+            
             console.log(check)
             if (check.length && check[0].role_id===3) {
                 let update = await forgotPasswordModel.createResetCode({reset_code: 0}, email)

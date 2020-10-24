@@ -49,7 +49,7 @@ module.exports = {
   },
   searchCity: async (req, res) => {
     try{
-      const {city_name} = req.body
+      const {city_name} = req.params
       const results = await cityModel.getCityIdLike(city_name)
       if (results.length) {
         return responseStandard(res, 'List of city', {results})
