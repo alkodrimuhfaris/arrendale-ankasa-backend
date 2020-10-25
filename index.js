@@ -25,6 +25,7 @@ const facilityRouter = require('./src/routes/admin/facilities')
 const transitRouter = require('./src/routes/admin/transit')
 const topUpRouter = require('./src/routes/admin/topUp')
 const manageUserRouter = require('./src/routes/admin/manageUser')
+const adminResetPassRouter = require('./src/routes/admin/forgotPassword')
 
 
 
@@ -48,6 +49,7 @@ const cityRouter = require('./src/routes/public/city')
 
 // ADMIN
 app.use('/auth/admin', authAdmin)
+app.use('/admin/reset/password', adminResetPassRouter)
 app.use('/manage/airlines', airlinesRouter)
 app.use('/manage/flight', flightRouter)
 app.use('/manage/city', manageCityRouter)
@@ -59,7 +61,7 @@ app.use('/manage/detail/flight', flightDetailRouter)
 
 // USER 
 app.use('/auth/user', authUser)
-app.use('/resetpassword', resetPasswordRouter)
+app.use('/user/reset/password', resetPasswordRouter)
 app.use('/user/reciept', recieptRouter)
 app.use('/user/ticket', ticketRouter)
 app.use('/mybook', bookingRouter)

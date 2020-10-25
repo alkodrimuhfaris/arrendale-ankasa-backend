@@ -10,11 +10,6 @@ module.exports = {
             WHERE id = ?`
     return await getFromDB(query, cityId)
   },
-  createFlight: async (flight, flightDetail) => {
-    query = [ ['INSERT INTO flight SET ?', flight], 
-              ['INSERT INTO flight_detail (class, seat_count, price, flight_id) VALUES ?', flightDetail]]
-    return await transactionToDB(query)
-  },
   getFlightDetail: async (data) => {
     query = `SELECT *
             FROM flight_detail
