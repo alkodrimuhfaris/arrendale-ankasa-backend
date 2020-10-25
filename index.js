@@ -12,7 +12,7 @@ app.use(bodyParser.urlencoded({
 app.use(cors());
 app.use(bodyParser.json())
 
-app.use('/uploads', express.static('assets/uploads/public'))
+app.use('/uploads', express.static('./assets/uploads'))
 
 // ADMIN ROUTES
 const authAdmin = require('./src/routes/admin/auth')
@@ -23,6 +23,7 @@ const facilityRouter = require('./src/routes/admin/facilities')
 const transitRouter = require('./src/routes/admin/transit')
 const topUpRouter = require('./src/routes/admin/topUp')
 const manageUserRouter = require('./src/routes/admin/manageUser')
+const adminRouter = require('./src/routes/admin/admin')
 
 
 
@@ -33,6 +34,7 @@ const recieptRouter = require('./src/routes/user/reciept')
 const ticketRouter = require('./src/routes/user/ticket')
 const paymentRouter = require('./src/routes/user/payment')
 const resetPasswordRouter = require('./src/routes/user/forgotPassword')
+const userRouter = require('./src/routes/user/user')
 
 
 // PUBLIC ROUTES
@@ -44,6 +46,7 @@ const searchTicketRouter = require('./src/routes/public/searchTicket')
 // const resetPasswordRouter = require('./src/routes/forgotPassword')
 
 // ADMIN
+app.use('/admin/profile', adminRouter)
 app.use('/auth/admin', authAdmin)
 app.use('/manage/airlines', airlinesRouter)
 app.use('/manage/flight', flightRouter)
@@ -60,6 +63,7 @@ app.use('/user/reciept', recieptRouter)
 app.use('/user/ticket', ticketRouter)
 app.use('/mybook', bookingRouter)
 app.use('/payment', paymentRouter)
+app.use('/user', userRouter)
 
 
 // PUBLIC
@@ -68,7 +72,6 @@ app.use('/searchticket', searchTicketRouter)
 // app.use('city', cityRouter)
 
 
-// app.use('/user', userRouter)
 // app.use('/admin', adminRouter)
 // app.use('/flightdetails', detailFlightRouter)
 // app.use('/destination', destinationListRouter)

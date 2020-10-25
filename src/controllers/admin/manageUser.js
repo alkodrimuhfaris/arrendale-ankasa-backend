@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt')
 const responseStandard = require('../../helpers/responseStandard')
 const joi = require('joi')
+let paging = require('../../helpers/pagination')
 
 const userModel = require('../../models/user/user')
 
@@ -8,14 +9,35 @@ const userModel = require('../../models/user/user')
 module.exports = {
     getUser: async (req, res) => {
         try {
-            const data = await userModel.getAllUser()
-            if(data.length > 0) {
-                return responseStandard(res, `List Of users`, {data})
+            const countuser = await userModel.countUser()
+            console.log('-------------------------')
+            console.log(countuser[0].count)
+            console.log('-------------------------')
+
+            let { search, orderBy } = req.query
+            const page = paging.pagination(req, countuser[0].count)
+            let { offset=0, pageInfo } = page
+            const { limitData: limit=5 } = pageInfo
+            if (typeof search === 'object') {
+                searchKey = Object.keys(search)[0]
+                searchValue = Object.values(search)[0]
             } else {
-                return responseStandard(res, 'Users Not found', {}, 401, false)
+                searchKey = 'username'
+                searchValue = search || ''
             }
+            if (typeof orderBy === 'object') {
+            orderByKey = Object.keys(orderBy)[0]
+            orderByValue = Object.values(orderBy)[0]
+            } else {
+            orderByKey = 'id'
+            orderByValue = orderBy || 'ASC'
+            }
+            const results = await userModel.searchUsers([searchKey, searchValue, orderByKey, orderByValue, limit, offset])
+            console.log(results)
+            return responseStandard(res, 'List of User', {results, pageInfo})
+
         } catch (e) {
-            return responseStandard(res, e.message, {}, 401, false)
+            return responseStandard(res, e.message, {}, 500, false)
         }
     },
     getUserById: async (req, res) => {
