@@ -8,6 +8,8 @@ let joi = require('joi')
 module.exports = {
   searchTicket: async (req, res) => {
     path = '/explore/search/flight'
+    req.query.search = req.query.search ? req.query.search : {}
+    
       let {
         origin = 0,
         destination = 0, 
@@ -25,15 +27,17 @@ module.exports = {
       
       console.log(price)
 
-      arrived_time = arrived_time.map(item => Number(item)).filter((_item, i)=> i<4 )
-      departure_time = departure_time.map(item => Number(item)).filter((_item, i)=> i<4 )
-      price = price.map(item => Number(item)).filter((_item, i)=> i<2 )
-      transit = transit.map(item => Number(item)).filter((_item, i)=> i<3 )
+      arrived_time = arrived_time.length && arrived_time.map(item => Number(item)).filter((_item, i)=> i<4 )
+      departure_time = departure_time.length && departure_time.map(item => Number(item)).filter((_item, i)=> i<4 )
+      price = price.length && price.map(item => Number(item)).filter((_item, i)=> i<2 )
+      transit = transit.length && transit.map(item => Number(item)).filter((_item, i)=> i<3 )
       airlines_name = (typeof airlines_name === 'string') ? [airlines_name] : airlines_name
-      
+      origin = origin && Number(origin)
+      destination = destination && Number(destination)
+
       let data = {
-        origin:Number(origin),
-        destination:Number(destination), 
+        origin,
+        destination, 
         departure_time,
         departure_date,
         arrived_time,
