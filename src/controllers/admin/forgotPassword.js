@@ -19,15 +19,20 @@ module.exports = {
         const check = await authModel.checkUserExist({ email: user })
         check.length && (resetcode = uuidv4())
         
-        result = await myEmail.mailHelper([email, resetcode])
+        try{
+            result = await myEmail.mailHelper([email, resetcode])
         
-        if (result.rejected.length === 0) {
-            let update = await forgotPasswordModel.createResetCode({reset_code: resetcode}, email)
-            if (update.affectedRows) {
-                return responseStandard(res, 'Success to send reset email')
-            } else {
-                return responseStandard(res, 'Internal Server Error', 500)                
+            if (result.rejected.length === 0) {
+                let update = await forgotPasswordModel.createResetCode({reset_code: resetcode}, email)
+                if (update.affectedRows) {
+                    return responseStandard(res, 'Success to send reset email')
+                } else {
+                    return responseStandard(res, 'Internal Server Error', 500)                
+                }
             }
+        } catch (e) {
+            console.log(e)
+            return responseStandard(res, e.message, 500)
         }
     },
     matchResetCode: async (req, res) => {

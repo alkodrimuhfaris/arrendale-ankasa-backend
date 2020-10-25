@@ -21,15 +21,19 @@ module.exports = {
         resetcode = resetcode.slice(resetcode.length - 8).toUpperCase()
         console.log(resetcode)
         
-        result = await myEmail.mailHelper([email, resetcode])
-        
-        if (result.rejected.length === 0) {
-            let update = await forgotPasswordModel.createResetCode({reset_code: resetcode}, email)
-            if (update.affectedRows) {
-                return responseStandard(res, 'Success to send reset email')
-            } else {
-                return responseStandard(res, 'Internal Server Error', 500)                
+        try {
+            result = await myEmail.mailHelper([email, resetcode])
+                if (result.rejected.length === 0) {
+                let update = await forgotPasswordModel.createResetCode({reset_code: resetcode}, email)
+                if (update.affectedRows) {
+                    return responseStandard(res, 'Success to send reset email')
+                } else {
+                    return responseStandard(res, 'Internal Server Error', 500)                
+                }
             }
+        } catch (e) {
+            console.log(e)
+            return responseStandard(res, e.message, 500)        
         }
     },
     matchResetCode: async (req, res) => {
