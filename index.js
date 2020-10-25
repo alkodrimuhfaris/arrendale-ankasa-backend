@@ -1,6 +1,7 @@
 require('dotenv').config()
 const express = require('express')
 const app = express()
+const {v4:uuidv4} = require('uuid')
 
 const bodyParser = require('body-parser')
 const cors = require('cors')
@@ -12,42 +13,82 @@ app.use(bodyParser.urlencoded({
 app.use(cors());
 app.use(bodyParser.json())
 
-app.use('/uploads', express.static('assets/uploads/public'))
+app.use('/uploads', express.static('./assets/uploads'))
 
-// IMPORT ROUTES
-const authRouter = require('./src/routes/auth')
-const userRouter = require('./src/routes/user')
-const adminRouter = require('./src/routes/admin')
-const airlinesRouter = require('./src/routes/airlines')
-const exploreRouter = require('./src/routes/explore')
-const bookingRouter = require('./src/routes/mybooking')
-const paymentRouter = require('./src/routes/payment')
-const flightRouter = require('./src/routes/flight')
-const destinationListRouter = require('./src/routes/destinationList')
-const faciliesRouter = require('./src/routes/facilities')
-// const classFlightRouter = require('./src/routes/classFlight')
-const transitRouter = require('./src/routes/transit')
-const detailFlightRouter = require('./src/routes/detailFlight')
-const resetPasswordRouter = require('./src/routes/forgotPassword')
-const recieptRouter = require('./src/routes/reciept')
-const ticketRouter = require('./src/routes/ticket')
+// ADMIN ROUTES
+const authAdmin = require('./src/routes/admin/auth')
+const airlinesRouter = require('./src/routes/admin/airlines')
+const flightRouter = require('./src/routes/admin/flight')
+const flightDetailRouter = require('./src/routes/admin/detailFlight')
+const manageCityRouter = require('./src/routes/admin/manageCity')
+const facilityRouter = require('./src/routes/admin/facilities')
+const transitRouter = require('./src/routes/admin/transit')
+const topUpRouter = require('./src/routes/admin/topUp')
+const manageUserRouter = require('./src/routes/admin/manageUser')
+const adminResetPassRouter = require('./src/routes/admin/forgotPassword')
+const adminRouter = require('./src/routes/admin/admin')
 
-app.use('/auth', authRouter)
-app.use('/user', userRouter)
-app.use('/admin', adminRouter)
-app.use('/airlines', airlinesRouter)
-app.use('/explore', exploreRouter)
+
+
+// USER ROUTES
+const authUser = require('./src/routes/user/auth')
+const bookingRouter = require('./src/routes/user/mybooking')
+const recieptRouter = require('./src/routes/user/reciept')
+const ticketRouter = require('./src/routes/user/ticket')
+const paymentRouter = require('./src/routes/user/payment')
+const resetPasswordRouter = require('./src/routes/user/forgotPassword')
+const userRouter = require('./src/routes/user/user')
+
+
+// PUBLIC ROUTES
+const searchTicketRouter = require('./src/routes/public/searchTicket')
+const searchTicketAdvRouter = require('./src/routes/public/searchTicketAdv')
+const exploreRouter = require('./src/routes/public/explore')
+const cityRouter = require('./src/routes/public/city')
+
+
+// const resetPasswordRouter = require('./src/routes/forgotPassword')
+
+// ADMIN
+app.use('/admin/profile', adminRouter)
+app.use('/auth/admin', authAdmin)
+app.use('/admin/reset/password', adminResetPassRouter)
+app.use('/manage/airlines', airlinesRouter)
+app.use('/manage/flight', flightRouter)
+app.use('/manage/city', manageCityRouter)
+app.use('/manage/facility', facilityRouter)
+app.use('/manage/transit', transitRouter)
+app.use('/manage/topup', topUpRouter)
+app.use('/manage/user', manageUserRouter)
+app.use('/manage/detail/flight', flightDetailRouter)
+
+// USER 
+app.use('/auth/user', authUser)
+app.use('/user/reset/password', resetPasswordRouter)
+app.use('/user/reciept', recieptRouter)
+app.use('/user/ticket', ticketRouter)
 app.use('/mybook', bookingRouter)
 app.use('/payment', paymentRouter)
-app.use('/flight', flightRouter)
-app.use('/flightdetails', detailFlightRouter)
-app.use('/destination', destinationListRouter)
-// app.use('/facilities', faciliesRouter)
-// app.use('/class', classFlightRouter)
-app.use('/transit', transitRouter)
-app.use('/resetpassword', resetPasswordRouter)
-app.use('/reciept', recieptRouter)
-app.use('/ticket', ticketRouter)
+app.use('/user', userRouter)
+
+
+// PUBLIC
+app.use('/explore', exploreRouter)
+app.use('/searchticket', searchTicketAdvRouter)
+app.use('/explore/search/flight', searchTicketAdvRouter)
+app.use('/city', cityRouter)
+
+app.use('/uploads', express.static('./assets/uploads'))
+app.use('/public', express.static('./assets/public'))
+
+
+// app.use('/admin', adminRouter)
+// app.use('/flightdetails', detailFlightRouter)
+// app.use('/destination', destinationListRouter)
+// // app.use('/class', classFlightRouter)
+// app.use('/resetpassword', resetPasswordRouter)
+
+
 
 
 app.listen(8000, () => {
