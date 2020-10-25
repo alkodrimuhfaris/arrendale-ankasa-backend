@@ -26,10 +26,10 @@ module.exports = {
         try {
           let {origin, destination} = results
           let cityOrigin = await cityModel.getCityId(origin)
-          if(!cityOrigin.length) {return responseStandard(res, 'City does not exist! create city first!', {error: error.message}, 400, false)}
+          if(!cityOrigin.length) {return responseStandard(res, 'City does not exist! create city first!', {}, 400, false)}
           origin = cityOrigin[0].id
           let cityDestination = await cityModel.getCityId(destination)
-          if(!cityDestination.length) {return responseStandard(res, 'City does not exist! create city first!', {error: error.message}, 400, false)}
+          if(!cityDestination.length) {return responseStandard(res, 'City does not exist! create city first!', {}, 400, false)}
           destination = cityDestination[0].id
 
           Object.assign(results, {origin, destination})
