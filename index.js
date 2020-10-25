@@ -55,7 +55,7 @@ app.use('/manage/facility', facilityRouter)
 app.use('/manage/transit', transitRouter)
 app.use('/manage/topup', topUpRouter)
 app.use('/manage/user', manageUserRouter)
-app.use('/manage/flight/detail', flightDetailRouter)
+app.use('/manage/detail/flight', flightDetailRouter)
 
 // USER 
 app.use('/auth/user', authUser)

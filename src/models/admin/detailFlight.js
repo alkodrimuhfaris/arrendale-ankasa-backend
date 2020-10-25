@@ -1,5 +1,5 @@
-const table = 'class'
-const getFromDB = require('../helpers/promiseToDB')
+const table = 'flight_detail'
+const getFromDB = require('../../helpers/promiseToDB')
 let query = ''
 
 
@@ -18,11 +18,10 @@ module.exports = {
         
         return await getFromDB(query)
     },
-    countFlightDetail: async (data, tables=table) => {
+    countFlightDetail: async (tables=table) => {
         query = `SELECT 
                  COUNT(*) 
-                 AS count 
-                 SELECT * 
+                 AS count
                  FROM ${tables}`
         return await getFromDB(query)
     },
