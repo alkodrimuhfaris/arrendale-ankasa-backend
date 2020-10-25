@@ -4,6 +4,10 @@ const multer = require('multer')
 
 const cityModel = require('../../models/admin/manageCity')
 const uploadHelper = require('../../helpers/uploadHelper')
+<<<<<<< HEAD:src/controllers/admin/manageCity.js
+=======
+const pagination = require('../../helpers/pagination')
+>>>>>>> master:src/controllers/destinationList.js
 
 
 module.exports = {
@@ -58,11 +62,22 @@ module.exports = {
     },
     getCity: async (req, res) => {
         try {
+<<<<<<< HEAD:src/controllers/admin/manageCity.js
             const data = await cityModel.getCity()
             if (data.length) {
                 return responseStandard(res, `List of City`, {data})
+=======
+            req.query.limit = req.query.limit ? req.query.limit : 10
+            const {page,limit,limiter} = pagination.pagePrep(req.query)
+            const data = await cityModel.getCity(limiter)
+            const [{count}] = await cityModel.getCityCount() || 0
+            if (data.length) {
+                const pageInfo = pagination.paging(count, page, limit, 'manage/city', req)
+                return responseStandard(res, `List of City`, {data, pageInfo})
+>>>>>>> master:src/controllers/destinationList.js
             } else {
-                return responseStandard(res, `Nothing found here`, {data}, 500, false)
+                const pageInfo = pagination.paging(count, page, limit, 'manage/city', req)
+                return responseStandard(res, `Nothing found here`, {data, pageInfo}, 500, false)
             }
         } catch (e) {
             return responseStandard(res, e.message, {}, 401, false)
