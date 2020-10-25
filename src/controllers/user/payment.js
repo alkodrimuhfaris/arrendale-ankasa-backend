@@ -114,7 +114,7 @@ module.exports= {
         }
 
         
-        return responseStandard(res, 'Payment successfull! Ticket is issued', {result}, 500, false)
+        return responseStandard(res, 'Payment successfull! Ticket is issued', {result})
       } else {
         balance = balance + price
 
