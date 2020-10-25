@@ -36,6 +36,17 @@ module.exports = {
             }
 
             if (typeof search === 'object') {
+                // if(search.origin || search.destination){
+                //     let resultOrigin = await cityModel.getCityId(search.origin)
+                //     if(!resultOrigin.length){return responseStandard(res, 'Flight not found', {}, 401, false)}
+                //     let [{id:origin_id}] = resultOrigin
+                //     let resultDestination = await cityModel.getCityId(search.destination)
+                //     if(!resultDestination.length){return responseStandard(res, 'Flight not found', {}, 401, false)}
+                //     let [{id:destination_id}] = resultDestination
+                //     origin = origin_id
+                //     destination = destination_id
+                //     Object.assign(search, {origin:origin_id, destination:destination_id})
+                // }
                 searchKey = Object.keys(search)[0]
                 searchValue = Object.values(search)[0]
             } else {

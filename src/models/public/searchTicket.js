@@ -42,6 +42,7 @@ let newQuery = `SELECT
                     transit 
                     ON 
                     flight_detail.transit_id = transit.id)`
+
 module.exports = {
     
     getFlight: async () =>{

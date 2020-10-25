@@ -37,11 +37,12 @@ const recieptRouter = require('./src/routes/user/reciept')
 const ticketRouter = require('./src/routes/user/ticket')
 const paymentRouter = require('./src/routes/user/payment')
 const resetPasswordRouter = require('./src/routes/user/forgotPassword')
-const searchTicketRouter = require('./src/routes/public/searchTicket')
 const userRouter = require('./src/routes/user/user')
 
 
 // PUBLIC ROUTES
+const searchTicketRouter = require('./src/routes/public/searchTicket')
+const searchTicketAdvRouter = require('./src/routes/public/searchTicketAdv')
 const exploreRouter = require('./src/routes/public/explore')
 const cityRouter = require('./src/routes/public/city')
 
@@ -74,6 +75,7 @@ app.use('/user', userRouter)
 // PUBLIC
 app.use('/explore', exploreRouter)
 app.use('/searchticket', searchTicketRouter)
+app.use('/explore/search/flight', searchTicketAdvRouter)
 app.use('/city', cityRouter)
 
 app.use('/uploads', express.static('./assets/uploads'))
