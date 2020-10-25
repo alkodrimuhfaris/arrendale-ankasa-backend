@@ -33,7 +33,7 @@ module.exports = {
                         if (isExist[0].password) {
                             bcrypt.compare(password, isExist[0].password, (err, result) => {
                                 if(result) {
-                                    jwt.sign({id: isExist[0].id, role_id: isExist[0].role_id, city_id, identifier}, APP_KEY, {expiresIn: 1511}, (err, token)=>{
+                                    jwt.sign({id: isExist[0].id, role_id: isExist[0].role_id, city_id, identifier}, APP_KEY, (err, token)=>{
                                         return responseStandard(res, {token: token}, {}, 200, true)
                                     }) 
                                 }
