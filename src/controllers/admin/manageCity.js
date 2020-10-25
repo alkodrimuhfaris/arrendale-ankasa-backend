@@ -4,6 +4,7 @@ const multer = require('multer')
 
 const cityModel = require('../../models/admin/manageCity')
 const uploadHelper = require('../../helpers/uploadHelper')
+const pagination = require('../../helpers/pagination')
 
 
 module.exports = {
@@ -58,11 +59,16 @@ module.exports = {
     },
     getCity: async (req, res) => {
         try {
-            const data = await cityModel.getCity()
+            req.query.limit = req.query.limit ? req.query.limit : 10
+            const {page,limit,limiter} = pagination.pagePrep(req.query)
+            const data = await cityModel.getCity(limiter)
+            const [{count}] = await cityModel.getCityCount() || 0
             if (data.length) {
-                return responseStandard(res, `List of City`, {data})
+                const pageInfo = pagination.paging(count, page, limit, 'manage/city', req)
+                return responseStandard(res, `List of City`, {data, pageInfo})
             } else {
-                return responseStandard(res, `Nothing found here`, {data}, 500, false)
+                const pageInfo = pagination.paging(count, page, limit, 'manage/city', req)
+                return responseStandard(res, `Nothing found here`, {data, pageInfo}, 500, false)
             }
         } catch (e) {
             return responseStandard(res, e.message, {}, 401, false)

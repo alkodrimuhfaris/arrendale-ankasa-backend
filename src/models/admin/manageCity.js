@@ -11,8 +11,16 @@ module.exports = {
 
         return await getFromDB(query, data)
     },
-    getCity: async (tables=table) =>{
+    getCity: async (limiter, tables=table) =>{
         query = `SELECT * 
+                 FROM 
+                 ${tables}
+                 ${limiter}`
+                
+        return await getFromDB(query)
+    },
+    getCityCount: async (tables=table) =>{
+        query = `SELECT count(*) as count
                  FROM 
                  ${tables}`
                 
