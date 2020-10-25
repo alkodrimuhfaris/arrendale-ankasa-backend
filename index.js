@@ -27,6 +27,7 @@ const topUpRouter = require('./src/routes/admin/topUp')
 const manageUserRouter = require('./src/routes/admin/manageUser')
 const adminResetPassRouter = require('./src/routes/admin/forgotPassword')
 const adminRouter = require('./src/routes/admin/admin')
+const manageTicketRouter = require('./src/routes/admin/ticket')
 
 
 
@@ -61,6 +62,8 @@ app.use('/manage/transit', transitRouter)
 app.use('/manage/topup', topUpRouter)
 app.use('/manage/user', manageUserRouter)
 app.use('/manage/detail/flight', flightDetailRouter)
+app.use('/manage/ticket', manageTicketRouter)
+
 
 // USER 
 app.use('/auth/user', authUser)
@@ -92,5 +95,13 @@ app.use('/public', express.static('./assets/public'))
 
 
 app.listen(8000, () => {
+<<<<<<< HEAD
     console.log('App Listening on port 8000')
+=======
+<<<<<<< HEAD
+    console.log('App Listening on port 8080')
+=======
+    console.log('App Listening on port 8000')
+>>>>>>> master
+>>>>>>> kodri
   })
