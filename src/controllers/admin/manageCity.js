@@ -100,7 +100,7 @@ module.exports = {
                     city_name: joi.string(),
                     country_code: joi.string(),
                     country_name: joi.string(),
-                    rating: joi.number().require()
+                    rating: joi.number()
                   })
                   var { value: results, error } = schema.validate(req.body)
                   if (error) {
@@ -114,9 +114,9 @@ module.exports = {
                       let data = await cityModel.updateCity(results, id)
       
                       if (data.affectedRows) {
-                          return responseStandard(res, `City Has been Created`, {results}, 200, true)
+                          return responseStandard(res, `City Has been updated`, {results}, 200, true)
                       } else {
-                          return responseStandard(res, 'Error to create City', {}, 500, false)
+                          return responseStandard(res, 'Error to updated City', {}, 500, false)
                       }
                   }      
             } catch (e) {

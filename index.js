@@ -13,7 +13,7 @@ app.use(bodyParser.urlencoded({
 app.use(cors());
 app.use(bodyParser.json())
 
-app.use('/uploads', express.static('assets/uploads/public'))
+app.use('/uploads', express.static('./assets/uploads'))
 
 // ADMIN ROUTES
 const authAdmin = require('./src/routes/admin/auth')
@@ -26,6 +26,7 @@ const transitRouter = require('./src/routes/admin/transit')
 const topUpRouter = require('./src/routes/admin/topUp')
 const manageUserRouter = require('./src/routes/admin/manageUser')
 const adminResetPassRouter = require('./src/routes/admin/forgotPassword')
+const adminRouter = require('./src/routes/admin/admin')
 
 
 
@@ -48,6 +49,7 @@ const cityRouter = require('./src/routes/public/city')
 // const resetPasswordRouter = require('./src/routes/forgotPassword')
 
 // ADMIN
+app.use('/admin/profile', adminRouter)
 app.use('/auth/admin', authAdmin)
 app.use('/admin/reset/password', adminResetPassRouter)
 app.use('/manage/airlines', airlinesRouter)
@@ -78,7 +80,6 @@ app.use('/uploads', express.static('./assets/uploads'))
 app.use('/public', express.static('./assets/public'))
 
 
-// app.use('/user', userRouter)
 // app.use('/admin', adminRouter)
 // app.use('/flightdetails', detailFlightRouter)
 // app.use('/destination', destinationListRouter)

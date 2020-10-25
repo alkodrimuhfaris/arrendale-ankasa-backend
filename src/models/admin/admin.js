@@ -8,7 +8,7 @@ module.exports = {
                  FROM 
                  ${tables}
                  WHERE
-                 role_id=${3}`
+                 role_id=${1}`
         
         return await getFromDB(query)                 
     },
@@ -18,14 +18,14 @@ module.exports = {
                  ${tables} 
                  WHERE ?
                  AND 
-                 role_id=${3}`
+                 role_id=${1}`
         
         return await getFromDB(query, data)                 
     },
     searchUsers: async (data, tables=table) => {
         query = `SELECT * 
                  FROM ${tables}
-                 WHERE role_id=${3} AND ${data[0]} 
+                 WHERE role_id=${1} AND ${data[0]} 
                  LIKE '%${data[1]}%'
                  ORDER BY ${tables}.${data[2]}
                  ${data[3]} LIMIT ${data[4]}
