@@ -1,21 +1,30 @@
 const sendMail = require('nodemailer');
 
+const {
+    USER,
+    PASS
+} = process.env
+
 module.exports = {
     mailHelper: (data) => {
         
         const connection = sendMail.createTransport({
             service: 'gmail',
             auth: {
-                user: 'ankasaticketing@gmail.com',
-                pass: 'ankasaticketing24'
+                user: USER,
+                pass: PASS
             }
         });
         
         const options = {
-            from: 'ankasaticketing@gmail.com',
+            from: USER,
             to: data[0],
-            subject: 'Password Reset',
-            text: data[1]
+            subject: 'Here Your Password Reset',
+            html: `<h1>Hello ${data[0]} this is your reset code</h1>
+                   <h4>${data[1]}</h4>
+                   <p>Did you request to reset your password?</p>
+                   <p>Ignore it if you dont request it, maybe you can try to change your password if you fill
+                   something suspicious activity in your account</p>`
         };
         
         return new Promise((resolve, reject) => {
