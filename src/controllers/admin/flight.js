@@ -8,8 +8,8 @@ const cityModel = require('../../models/public/city')
 module.exports = {
     createFlight: async (req, res) => {
       const schema = joi.object({
-        airline_id: joi.number().required(),
-        class_id: joi.number().required(),
+        airlines_id: joi.number().required(),
+        flight_code: joi.string().required(),
         origin: joi.string().required(),
         destination: joi.string().required(),
         transit_id: joi.number().required(),
