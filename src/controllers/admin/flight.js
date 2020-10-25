@@ -12,7 +12,6 @@ module.exports = {
         flight_code: joi.string().required(),
         origin: joi.string().required(),
         destination: joi.string().required(),
-        transit_id: joi.number().required(),
         departure_date: joi.string().required(),
         departure_time: joi.string().required(),
         arrived_date: joi.string().required(),
