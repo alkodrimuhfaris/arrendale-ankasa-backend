@@ -74,7 +74,7 @@ app.use('/user', userRouter)
 
 // PUBLIC
 app.use('/explore', exploreRouter)
-app.use('/searchticket', searchTicketRouter)
+app.use('/searchticket', searchTicketAdvRouter)
 app.use('/explore/search/flight', searchTicketAdvRouter)
 app.use('/city', cityRouter)
 
