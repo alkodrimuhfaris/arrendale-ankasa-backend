@@ -32,6 +32,7 @@ module.exports = {
   getAllTicket: async (user_id, limiter) => {
     query = `SELECT * FROM ticket
             WHERE user_id = ?
+            ORDER BY created_at DESC
             ${limiter}`
     return await getFromDB(query, user_id)
   },
@@ -43,13 +44,15 @@ module.exports = {
   getTicketById: async (user_id, ticket_id) => {
     query = `SELECT * FROM ticket
             WHERE user_id = ?
-            AND id = ?`
+            AND id = ?
+            ORDER BY created_at DESC`
     return await getFromDB(query, [user_id, ticket_id])
   },
   getTicketByBookingId: async (user_id, booking_id, limiter) => {
     query = `SELECT * FROM ticket
             WHERE user_id = ?
             AND booking_id = ?
+            ORDER BY created_at DESC
             ${limiter}`
     return await getFromDB(query, [user_id, booking_id])
   },

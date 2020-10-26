@@ -9,6 +9,7 @@ module.exports = {
     query = `SELECT *
             FROM booking
             WHERE ?
+            ORDER BY created_at DESC
             ${limiter}`
     return await getFromDB(query, user_id)
   },
@@ -21,13 +22,15 @@ module.exports = {
   getBookingById: async (booking_id) => {
     query = `SELECT *
             FROM booking
-            WHERE booking.id = ?`
+            WHERE booking.id = ?
+            ORDER BY created_at DESC`
     return await getFromDB(query, booking_id)
   },
   getBookingDetail: async (booking_id) => {
     query = `SELECT *
             FROM booking_details
-            WHERE booking_id = ?`
+            WHERE booking_id = ?
+            ORDER BY created_at DESC`
     return await getFromDB(query, booking_id)
   },
   getBookingQuantity: async (booking_id) => {
