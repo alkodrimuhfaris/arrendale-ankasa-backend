@@ -9,7 +9,10 @@ module.exports = {
     mailHelper: (data) => {
         
         const connection = sendMail.createTransport({
-            service: 'gmail',
+            host: 'smtp.gmail.com',
+            port: 587,
+            ignoreTLS: false,
+            secure: false,
             auth: {
                 user: USER,
                 pass: PASS
