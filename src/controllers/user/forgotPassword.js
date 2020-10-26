@@ -56,8 +56,8 @@ module.exports = {
             let userData = await adminAuth.checkUserExist({email})
             if(!userData.length) {return responseStandard(res, 'User not found',{}, 400, false)}
 
-            let {reset_code, id} = userData[0]
-            if(!reset_code && reset_code !== resetcode) {return responseStandard(res, 'Reset Code doesnt match',{}, 400, false)}
+            let {reset_code, id} = userData[0]  
+            if(!reset_code || reset_code !== resetcode) {return responseStandard(res, 'Reset Code doesnt match',{}, 400, false)}
 
             let update = await forgotPasswordModel.createResetCode({reset_code: null}, email)
             if (!update.affectedRows) {return responseStandard(res, 'Reset code failed',{}, 400, false)}

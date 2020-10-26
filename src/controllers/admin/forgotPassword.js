@@ -59,7 +59,7 @@ module.exports = {
             let adminCheck = await authModel.checkUserExist({id:uniqueKey}, 'uuid_admin')
             if(adminCheck[0].user_id !== id) {return responseStandard(res, 'Access Forbidden!', {}, 403, false)}
 
-            if(!reset_code && reset_code !== resetcode) {return responseStandard(res, 'Reset Code doesnt match',{}, 400, false)}
+            if(!reset_code || reset_code !== resetcode) {return responseStandard(res, 'Reset Code doesnt match',{}, 400, false)}
 
             let update = await forgotPasswordModel.createResetCode({reset_code: null}, email)
             if (!update.affectedRows) {return responseStandard(res, 'Reset code failed',{}, 400, false)}

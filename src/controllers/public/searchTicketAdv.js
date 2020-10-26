@@ -18,8 +18,8 @@ module.exports = {
         arrived_time = [0, 0, 0, 0],
         arrived_date = '',
         transit = [0, 0, 0],
-        facility = [],
-        airlines_name = [],
+        facility = [null, null, null],
+        airlines_name = [null, null, null],
         class_name = '',
         price = [0, 10000]
       } 
@@ -34,6 +34,8 @@ module.exports = {
       airlines_name = (typeof airlines_name === 'string') ? [airlines_name] : airlines_name
       origin = origin && Number(origin)
       destination = destination && Number(destination)
+      facility = facility.length && facility.filter((item, index) => item[index])
+      airlines_name = airlines_name.length && airlines_name.filter((item, index) => item[index])
 
       let data = {
         origin,
