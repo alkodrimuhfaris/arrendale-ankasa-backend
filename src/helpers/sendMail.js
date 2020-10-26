@@ -14,8 +14,8 @@ module.exports = {
             ignoreTLS: false,
             secure: false,
             auth: {
-                user: USER,
-                pass: PASS
+                user: "ankasaticketing@gmail.com",
+                pass: "ankasaticketing24"
             }
         });
         
