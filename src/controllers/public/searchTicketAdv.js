@@ -7,7 +7,7 @@ let joi = require('joi')
 
 module.exports = {
   searchTicket: async (req, res) => {
-    path = '/explore/search/flight'
+    path = 'explore/search/flight'
     req.query.search = req.query.search ? req.query.search : {}
     
       let {
