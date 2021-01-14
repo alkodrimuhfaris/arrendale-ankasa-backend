@@ -4,22 +4,26 @@ const tableTransit = 'transit'
 const tableAirlines = 'airlines'
 const tableCity = 'city'
 const getFromDB = require('../../helpers/promiseToDB')
+const pagination =  require('../../helpers/pagination')
+const queryGenerator = require('../../helpers/queryGenerator')
 
 let query = ''
 let newQuery = `SELECT 
-                flight.id, 
-                airlines.name, 
+                flight.id as id, 
+                airlines.name as airlines_name, 
                 airlines.logo AS airlines_logo,
-                flight_detail.seat_count, 
-                flight_detail.class_name, 
+                flight_detail.seat_count as seat_count, 
+                flight_detail.class_name as class, 
                 transit.name AS transit,                 
                 origin,
-                flight.departure_date, 
-                flight.departure_time,
+                flight.departure_date as departure_date, 
+                flight.departure_time as departure_time,
                 destination, 
-                flight.arrived_date, 
-                flight.arrived_time, 
-                flight_detail.price FROM 
+                flight.arrived_date as arrived_date, 
+                flight.arrived_time as arrived_time, 
+                flight_detail.price as price,
+                flight.created_at as created_at
+                FROM 
                 ((flight 
                     INNER JOIN 
                     airlines 
@@ -123,5 +127,33 @@ module.exports = {
                  FROM ${tableFlight}`
 
         return await getFromDB(query)
+    },
+    getAllFlight: async (whereData = {}, reqQuery = {}) => {
+        const { searchArr, date, price, orderArr, dataArr, prepStatement } = queryGenerator({ ...reqQuery, data: whereData })
+    
+        // query for search and limit
+        const additionalQuery = [searchArr, date, price, dataArr].filter(item => item).map(item => `(${item})`).join(' AND ')
+    
+        // query for where (if it exist)
+        const where = additionalQuery ? ' WHERE ' : ''
+    
+        const { limiter } = pagination.pagePrep(reqQuery)
+    
+        query = `SELECT *
+                FROM (${newQuery}) as ticketTable
+                ${where}
+                ${additionalQuery}
+                ORDER BY 
+                    ${orderArr}
+                ${limiter}`
+        const results = await getFromDB(query, prepStatement)
+    
+        query = `SELECT count(*) as count
+                FROM (${newQuery}) as ticketTable
+                ${where}
+                ${additionalQuery}`
+        let [{count}] = await getFromDB(query, prepStatement)
+    
+        return { results, count }
     }
 }

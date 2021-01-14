@@ -1,5 +1,6 @@
 let responseStandard = require('../../helpers/responseStandard')
 let paging = require('../../helpers/pagination')
+let pagination = require('../../helpers/pagination')
 
 let detailFlightModel = require('../../models/public/searchTicket')
 let cityModel = require('../../models/public/city')
@@ -120,6 +121,23 @@ module.exports = {
 
         } catch (e) {
             return responseStandard(res, e.message, {}, 500, false)
+        }
+    },
+    searchAllFlight: async (req, res) => {
+        const tables = 'searchticket/'
+        const { page, limit } = req.query
+        console.log('test')
+        try {
+            console.log('try')
+          const { results, count } = await detailFlightModel.getAllFlight({}, req.query)
+          console.log(count);
+          const pageInfo = pagination.paging(count, page, limit, tables, req)
+          const msg = count ? 'List of Tickets' : 'There is no tickets in the list'
+          console.log('berhasil!')
+          return responseStandard(res, msg, { results, pageInfo })
+        } catch (error) {
+          console.log(error)
+          return responseStandard(res, error.message, {}, 500, false)
         }
     }
 }

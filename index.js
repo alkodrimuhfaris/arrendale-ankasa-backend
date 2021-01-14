@@ -2,6 +2,7 @@ require('dotenv').config()
 const express = require('express')
 const app = express()
 const {v4:uuidv4} = require('uuid')
+const response = require('./src/helpers/responseStandard')
 
 const bodyParser = require('body-parser')
 const cors = require('cors')
@@ -77,8 +78,8 @@ app.use('/user', userRouter)
 
 // PUBLIC
 app.use('/explore', exploreRouter)
-app.use('/searchticket', searchTicketAdvRouter)
-app.use('/explore/search/flight', searchTicketAdvRouter)
+app.use('/searchticket', searchTicketRouter)
+app.use('/explore/search/flight', searchTicketRouter)
 app.use('/city', cityRouter)
 
 app.use('/uploads', express.static('./assets/uploads'))
@@ -91,8 +92,10 @@ app.use('/public', express.static('./assets/public'))
 // // app.use('/class', classFlightRouter)
 // app.use('/resetpassword', resetPasswordRouter)
 
-
-
+app.use('/', (req, res) => {
+  console.log('some one opened home')
+  return response(res, 'ANKASA API', {})
+})
 
 app.listen(8000, () => {
     console.log('App Listening on port 8000')
